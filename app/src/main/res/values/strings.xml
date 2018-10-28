@@ -5,4 +5,12 @@
 
   <!-- TODO: Remove or change this placeholder text -->
   <string name="hello_blank_fragment">Hello blank fragment</string>
+  <string name="item_details">ITEM DETAILS</string>
+  <string name="enter_item_name">Enter Item Name</string>
+  <string name="enter_item_quantity">Enter Item Quantity</string>
+  <string name="enter_item_rate">Enter Item Rate</string>
+  <string name="sgst_9">SGST 9% -</string>
+  <string name="igst_9">IGST 9% -</string>
+  <string name="total_amount_amount_igst_sgst">Total Amount (Amount + IGST + SGST) -</string>
+  <string name="done">DONE</string>
 </resources>
