@@ -1,5 +1,5 @@
 package itemsale.suvidha.com.itemsale
 
-fun round2Decimal(amount: Double): Double {
-    return Math.round(amount * 10.0) / 10.0
+fun Double.round2Decimal(): Double {
+  return Math.round(this * 10.0) / 10.0
 }

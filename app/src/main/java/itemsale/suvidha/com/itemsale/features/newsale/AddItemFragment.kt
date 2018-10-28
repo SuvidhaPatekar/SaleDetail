@@ -1,6 +1,5 @@
-package itemsale.suvidha.com.itemsale.features
+package itemsale.suvidha.com.itemsale.features.newsale
 
-import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
@@ -23,7 +22,7 @@ import kotlinx.android.synthetic.main.fragment_item_detail.tvIgst
 import kotlinx.android.synthetic.main.fragment_item_detail.tvSgst
 import kotlinx.android.synthetic.main.fragment_item_detail.tvTotal
 
-class ItemDetailFragment : DialogFragment() {
+class AddItemFragment : DialogFragment() {
   private lateinit var listener: OnClickListener
   private var itemQuantity = 0
   private var itemPrice = 0.0
@@ -138,9 +137,9 @@ class ItemDetailFragment : DialogFragment() {
   }
 
   private fun calculateTotal() {
-    amount = round2Decimal(itemPrice * itemQuantity)
-    tax = round2Decimal(amount * 0.09)
-    totalPrice = round2Decimal(amount + tax + tax)
+    amount = (itemPrice * itemQuantity).round2Decimal()
+    tax = (amount * 0.09).round2Decimal()
+    totalPrice = (amount + tax + tax).round2Decimal()
     Log.d(
         "total",
         "itemPrice = $itemPrice,  itemQuantity = $itemQuantity, amount = $amount, tax = $tax, totalPrice = $totalPrice"
@@ -153,23 +152,30 @@ class ItemDetailFragment : DialogFragment() {
   }
 
   private fun addItem() {
-    if (null != itemName && itemQuantity != 0 && itemPrice != 0.0) {
-      listener.onItemAdded(
-          Item(
-              id = -1,
-              itemName = itemName!!, quantity = itemQuantity, price = itemPrice, sgst = tax,
-              igst = tax, totalPrice = totalPrice, purchaseId = -1
-          )
-      )
-      Log.d("On CLICK", "dismiss")
-      dismiss()
+    if (itemName == null) {
+      showToast(R.string.enter_item_name)
+      return
     }
 
-    when {
-      null == itemName -> showToast(R.string.enter_item_name)
-      itemQuantity == 0 -> showToast(R.string.enter_item_quantity)
-      itemPrice == 0.0 -> showToast(R.string.enter_item_rate)
+    if (itemQuantity == 0) {
+      showToast(R.string.enter_item_quantity)
+      return
     }
+
+    if (itemPrice == 0.0) {
+      showToast(R.string.enter_item_rate)
+      return
+    }
+
+    listener.onItemAdded(
+        Item(
+            id = -1,
+            itemName = itemName!!, quantity = itemQuantity, price = itemPrice, sgst = tax,
+            igst = tax, totalPrice = totalPrice, purchaseId = -1
+        )
+    )
+    Log.d("On CLICK", "dismiss")
+    dismiss()
   }
 
   private fun showToast(msg: Int) {
@@ -194,17 +200,11 @@ class ItemDetailFragment : DialogFragment() {
     }
   }
 
-  override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-    val dialog = super.onCreateDialog(savedInstanceState)
-    dialog.setTitle("ITEM DETAILS")
-    return dialog
-  }
-
   interface OnClickListener {
     fun onItemAdded(item: Item)
   }
 
   companion object {
-    fun newInstance() = ItemDetailFragment()
+    fun newInstance() = AddItemFragment()
   }
 }

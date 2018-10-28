@@ -1,4 +1,4 @@
-package itemsale.suvidha.com.itemsale.features
+package itemsale.suvidha.com.itemsale.features.salesdetails
 
 import android.arch.lifecycle.ViewModel;
 

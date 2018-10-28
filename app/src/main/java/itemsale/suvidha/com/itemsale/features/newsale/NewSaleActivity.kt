@@ -1,4 +1,4 @@
-package itemsale.suvidha.com.itemsale.features
+package itemsale.suvidha.com.itemsale.features.newsale
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -7,11 +7,13 @@ import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
 import itemsale.suvidha.com.itemsale.R
-import itemsale.suvidha.com.itemsale.features.ItemDetailFragment.OnClickListener
+import itemsale.suvidha.com.itemsale.features.newsale.AddItemFragment.OnClickListener
+import itemsale.suvidha.com.itemsale.features.salesdetails.SaleDetailAdapter
 import itemsale.suvidha.com.itemsale.model.entity.Item
 import itemsale.suvidha.com.itemsale.round2Decimal
 import kotlinx.android.synthetic.main.activity_new_sale.fab
 import kotlinx.android.synthetic.main.activity_new_sale.toolbar
+import kotlinx.android.synthetic.main.content_new_sale.btnDone
 import kotlinx.android.synthetic.main.content_new_sale.checkbox
 import kotlinx.android.synthetic.main.content_new_sale.etAmount
 import kotlinx.android.synthetic.main.content_new_sale.rvItems
@@ -32,7 +34,8 @@ class NewSaleActivity : AppCompatActivity(), OnClickListener {
     setSupportActionBar(toolbar)
 
     fab.setOnClickListener {
-      val newFragment = ItemDetailFragment.newInstance()
+      val newFragment =
+        AddItemFragment.newInstance()
       newFragment.show(supportFragmentManager, "ITEM DETAILS")
     }
     items = ArrayList()
@@ -72,6 +75,10 @@ class NewSaleActivity : AppCompatActivity(), OnClickListener {
       }
 
     })
+
+    btnDone.setOnClickListener {
+
+    }
   }
 
   private fun setData() {
@@ -81,10 +88,10 @@ class NewSaleActivity : AppCompatActivity(), OnClickListener {
   }
 
   override fun onItemAdded(item: Item) {
-    items.add(item)
+    items.add(0, item)
     saleDetailAdapter.setItems(items)
     quantity += item.quantity
-    subTotal = round2Decimal(subTotal + item.totalPrice)
+    subTotal = (subTotal + item.totalPrice).round2Decimal()
     setData()
   }
 }

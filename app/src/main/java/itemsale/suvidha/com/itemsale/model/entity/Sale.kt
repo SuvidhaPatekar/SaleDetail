@@ -4,7 +4,7 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
 
 @Entity
-data class Purchase(
+data class Sale(
   @PrimaryKey val id: Int,
   val customerName: String,
   val date: String,

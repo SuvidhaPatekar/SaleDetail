@@ -1,14 +1,13 @@
-package itemsale.suvidha.com.itemsale.features
+package itemsale.suvidha.com.itemsale.features.salesdetails
 
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.RecyclerView.VERTICAL
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import itemsale.suvidha.com.itemsale.R.layout
+import itemsale.suvidha.com.itemsale.features.SaleAdapter
 import kotlinx.android.synthetic.main.sale_detail_fragment.rvSaleDetail
 
 class SaleDetailFragment : Fragment() {
@@ -41,11 +40,6 @@ class SaleDetailFragment : Fragment() {
   ) {
     super.onViewCreated(view, savedInstanceState)
     saleDetailAdapter = SaleAdapter()
-    val dividerItemDecoration = DividerItemDecoration(
-        rvSaleDetail.context,
-        VERTICAL
-    )
-    rvSaleDetail.addItemDecoration(dividerItemDecoration)
     rvSaleDetail.adapter = saleDetailAdapter
   }
 }
