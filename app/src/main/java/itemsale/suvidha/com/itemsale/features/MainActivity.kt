@@ -4,6 +4,7 @@ import android.arch.persistence.room.Room
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import itemsale.suvidha.com.itemsale.R
 import itemsale.suvidha.com.itemsale.R.layout
 import itemsale.suvidha.com.itemsale.R.string
 import itemsale.suvidha.com.itemsale.model.ItemDatabase
@@ -38,7 +39,7 @@ class MainActivity : AppCompatActivity() {
   }
 
   private fun initDatabase() {
-    val DATABASE_NAME = getString(string.item_db)
+    val DATABASE_NAME = getString(R.string.item_db)
     Room.databaseBuilder(
         applicationContext,
         ItemDatabase::class.java, DATABASE_NAME

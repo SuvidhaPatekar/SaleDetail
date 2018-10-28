@@ -1,65 +1,68 @@
 package itemsale.suvidha.com.itemsale.features
 
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import itemsale.suvidha.com.itemsale.R.layout
-import itemsale.suvidha.com.itemsale.features.SaleDetailAdapter.SaleViewHolder
-import kotlinx.android.synthetic.main.item_sale.view.btnDelete
-import kotlinx.android.synthetic.main.item_sale.view.btnPay
-import kotlinx.android.synthetic.main.item_sale.view.tvBalanceAmount
-import kotlinx.android.synthetic.main.item_sale.view.tvDate
-import kotlinx.android.synthetic.main.item_sale.view.tvName
-import kotlinx.android.synthetic.main.item_sale.view.tvTotalAmount
+import itemsale.suvidha.com.itemsale.R
+import itemsale.suvidha.com.itemsale.features.SaleDetailAdapter.SaleDetailViewHolder
+import itemsale.suvidha.com.itemsale.model.entity.Item
+import kotlinx.android.synthetic.main.item_sale_detail.view.tvId
+import kotlinx.android.synthetic.main.item_sale_detail.view.tvItemName
+import kotlinx.android.synthetic.main.item_sale_detail.view.tvQuantity
+import kotlinx.android.synthetic.main.item_sale_detail.view.tvRate
+import kotlinx.android.synthetic.main.item_sale_detail.view.tvTotalAmount
 
-class SaleDetailAdapter : RecyclerView.Adapter<SaleViewHolder>() {
+class SaleDetailAdapter : RecyclerView.Adapter<SaleDetailViewHolder>() {
+
+  private var items: ArrayList<Item>? = null
+
+  fun setItems(items: ArrayList<Item>) {
+    this.items = items
+    notifyDataSetChanged()
+  }
+
   override fun onCreateViewHolder(
     viewGroup: ViewGroup,
-    viewType: Int
-  ): SaleViewHolder {
-    return SaleViewHolder(
+    p1: Int
+  ): SaleDetailViewHolder {
+    return SaleDetailViewHolder(
         LayoutInflater.from(viewGroup.context)
-            .inflate(layout.item_sale, viewGroup, false)
+            .inflate(R.layout.item_sale_detail, viewGroup, false)
     )
   }
 
   override fun getItemCount(): Int {
-    return 3
+    if (items != null) {
+      return items?.size!!
+    }
+    return 0
   }
 
   override fun onBindViewHolder(
-    holder: SaleViewHolder,
+    holder: SaleDetailViewHolder,
     position: Int
   ) {
-    holder.bindTo()
+    holder.bindTo(item = items?.get(position), position = position)
   }
 
-  inner class SaleViewHolder(
+  inner class SaleDetailViewHolder(
     itemView: View
   ) : RecyclerView.ViewHolder(itemView) {
-    private val tvName: TextView = itemView.tvName
-    private val tvDate: TextView = itemView.tvDate
-    private val tvTotalAmount: TextView = itemView.tvTotalAmount
-    private val tvBalanceAmount: TextView = itemView.tvBalanceAmount
-
-    init {
-      itemView.btnDelete.setOnClickListener {
-        Log.d("btn delete", "on click")
-      }
-
-      itemView.btnPay.setOnClickListener {
-        Log.d("btn pay", "on click")
-      }
-    }
-
-    fun bindTo() {
-      tvName.text = "Suvidha"
-      tvDate.text = "17/12/1789"
-      tvBalanceAmount.text = "1000"
-      tvTotalAmount.text = "1000"
+    private var tvId = itemView.tvId
+    private var tvItemName = itemView.tvItemName
+    private var tvQuantity = itemView.tvQuantity
+    private var tvRate = itemView.tvRate
+    private var tvTotalAmount = itemView.tvTotalAmount
+    fun bindTo(
+      item: Item?,
+      position: Int
+    ) {
+      tvId.text = (position + 1).toString()
+      tvItemName.text = item?.itemName
+      tvQuantity.text = item?.quantity.toString()
+      tvRate.text = item?.price.toString()
+      tvTotalAmount.text = item?.totalPrice.toString()
     }
   }
 }

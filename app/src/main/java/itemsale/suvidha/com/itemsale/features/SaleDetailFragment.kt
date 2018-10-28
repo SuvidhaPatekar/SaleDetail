@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.sale_detail_fragment.rvSaleDetail
 
 class SaleDetailFragment : Fragment() {
 
-  private lateinit var saleDetailAdapter: SaleDetailAdapter
+  private lateinit var saleDetailAdapter: SaleAdapter
 
   companion object {
     fun newInstance() = SaleDetailFragment()
@@ -40,7 +40,7 @@ class SaleDetailFragment : Fragment() {
     savedInstanceState: Bundle?
   ) {
     super.onViewCreated(view, savedInstanceState)
-    saleDetailAdapter = SaleDetailAdapter()
+    saleDetailAdapter = SaleAdapter()
     val dividerItemDecoration = DividerItemDecoration(
         rvSaleDetail.context,
         VERTICAL
