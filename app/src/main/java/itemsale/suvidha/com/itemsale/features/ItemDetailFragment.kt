@@ -1,4 +1,4 @@
-package itemsale.suvidha.com.itemsale
+package itemsale.suvidha.com.itemsale.features
 
 import android.app.Dialog
 import android.os.Bundle
@@ -9,6 +9,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import itemsale.suvidha.com.itemsale.R.layout
+import itemsale.suvidha.com.itemsale.round2Decimal
 import kotlinx.android.synthetic.main.fragment_item_detail.btnDone
 import kotlinx.android.synthetic.main.fragment_item_detail.etItemPrice
 import kotlinx.android.synthetic.main.fragment_item_detail.etItemQuantity
@@ -28,7 +30,7 @@ class ItemDetailFragment : DialogFragment() {
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    return inflater.inflate(R.layout.fragment_item_detail, container, false)
+    return inflater.inflate(layout.fragment_item_detail, container, false)
   }
 
   override fun onViewCreated(

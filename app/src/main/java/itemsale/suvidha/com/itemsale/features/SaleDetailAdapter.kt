@@ -1,4 +1,4 @@
-package itemsale.suvidha.com.itemsale
+package itemsale.suvidha.com.itemsale.features
 
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -6,7 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import itemsale.suvidha.com.itemsale.SaleDetailAdapter.SaleViewHolder
+import itemsale.suvidha.com.itemsale.R.layout
+import itemsale.suvidha.com.itemsale.features.SaleDetailAdapter.SaleViewHolder
 import kotlinx.android.synthetic.main.item_sale.view.btnDelete
 import kotlinx.android.synthetic.main.item_sale.view.btnPay
 import kotlinx.android.synthetic.main.item_sale.view.tvBalanceAmount
@@ -21,7 +22,7 @@ class SaleDetailAdapter : RecyclerView.Adapter<SaleViewHolder>() {
   ): SaleViewHolder {
     return SaleViewHolder(
         LayoutInflater.from(viewGroup.context)
-            .inflate(R.layout.item_sale, viewGroup, false)
+            .inflate(layout.item_sale, viewGroup, false)
     )
   }
 

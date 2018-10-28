@@ -13,4 +13,5 @@
   <string name="igst_9">IGST 9% -</string>
   <string name="total_amount_amount_igst_sgst">Total Amount (Amount + IGST + SGST) -</string>
   <string name="done">DONE</string>
+  <string name="item_db">item_db</string>
 </resources>

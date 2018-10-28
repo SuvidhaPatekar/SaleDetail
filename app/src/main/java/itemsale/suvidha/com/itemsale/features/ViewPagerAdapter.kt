@@ -1,4 +1,4 @@
-package itemsale.suvidha.com.itemsale
+package itemsale.suvidha.com.itemsale.features
 
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
@@ -13,17 +13,16 @@ class ViewPagerAdapter(fragmentManager: FragmentManager) : FragmentStatePagerAda
   private val actualFragmentsInPager: Array<Fragment?> = arrayOfNulls(20)
 
   fun addFragment(
-    fragment: Fragment,
-    title: String
+    fragment: Fragment
   ) {
     fragments.add(fragment)
   }
 
   override fun getPageTitle(position: Int): CharSequence? {
     if (position == 0) {
-      return "PAID"
+      return "PARTIALLY PAID"
     } else if (position == 1) {
-      return "PENDING"
+      return "PAID"
     }
     return "PAID"
   }
