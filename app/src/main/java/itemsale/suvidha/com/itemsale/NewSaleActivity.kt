@@ -2,9 +2,9 @@ package itemsale.suvidha.com.itemsale
 
 import android.os.Bundle
 import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity;
-
-import kotlinx.android.synthetic.main.activity_new_sale.*
+import android.support.v7.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_new_sale.fab
+import kotlinx.android.synthetic.main.activity_new_sale.toolbar
 
 class NewSaleActivity : AppCompatActivity() {
 
@@ -19,5 +19,4 @@ class NewSaleActivity : AppCompatActivity() {
           .show()
     }
   }
-
 }
