@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    >
+
+  <TextView
+      android:id="@+id/tvName"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:padding="4dp"
+      app:layout_constraintBottom_toTopOf="@id/tvDate"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      tools:text="name"
+      />
+
+  <TextView
+      android:id="@+id/tvDate"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:padding="4dp"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/tvName"
+      tools:text="date"
+      />
+
+  <TextView
+      android:id="@+id/tvTotalAmount"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:padding="4dp"
+      app:layout_constraintBottom_toTopOf="@id/tvBalanceAmount"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      tools:text="totalAmount"
+      />
+
+  <TextView
+      android:id="@+id/tvBalanceAmount"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:padding="4dp"
+      app:layout_constraintBottom_toTopOf="@id/btnDelete"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/tvTotalAmount"
+      tools:text="balanceAmount"
+      />
+
+  <Button
+      android:id="@+id/btnDelete"
+      android:layout_width="wrap_content"
+      android:layout_height="46dp"
+      android:layout_margin="2dp"
+      android:text="DELETE"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/tvBalanceAmount"
+      />
+
+  <Button
+      android:id="@+id/btnPay"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_margin="2dp"
+      android:text="PAY"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintRight_toLeftOf="@id/btnDelete"
+      app:layout_constraintTop_toBottomOf="@id/tvBalanceAmount"
+      />
+</android.support.constraint.ConstraintLayout>
