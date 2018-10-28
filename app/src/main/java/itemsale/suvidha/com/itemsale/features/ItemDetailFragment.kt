@@ -1,6 +1,7 @@
 package itemsale.suvidha.com.itemsale.features
 
 import android.app.Dialog
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.text.Editable
@@ -9,9 +10,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import itemsale.suvidha.com.itemsale.R
 import itemsale.suvidha.com.itemsale.R.layout
+import itemsale.suvidha.com.itemsale.model.entity.Item
 import itemsale.suvidha.com.itemsale.round2Decimal
 import kotlinx.android.synthetic.main.fragment_item_detail.btnDone
+import kotlinx.android.synthetic.main.fragment_item_detail.etItemName
 import kotlinx.android.synthetic.main.fragment_item_detail.etItemPrice
 import kotlinx.android.synthetic.main.fragment_item_detail.etItemQuantity
 import kotlinx.android.synthetic.main.fragment_item_detail.tvIgst
@@ -19,11 +24,13 @@ import kotlinx.android.synthetic.main.fragment_item_detail.tvSgst
 import kotlinx.android.synthetic.main.fragment_item_detail.tvTotal
 
 class ItemDetailFragment : DialogFragment() {
+  private lateinit var listener: OnClickListener
   private var itemQuantity = 0
   private var itemPrice = 0.0
   private var totalPrice = 0.0
   private var tax = 0.0
   private var amount = 0.0
+  private var itemName: String? = null
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -39,69 +46,95 @@ class ItemDetailFragment : DialogFragment() {
   ) {
     super.onViewCreated(view, savedInstanceState)
     btnDone.setOnClickListener {
-
+      addItem()
     }
-
     calculateTotal()
-    etItemQuantity.addTextChangedListener(object : TextWatcher {
-      override fun afterTextChanged(quantity: Editable?) {
-        itemQuantity = if (quantity.isNullOrEmpty()) {
-          0
-        } else {
-          quantity.toString()
-              .toInt()
-        }
+    etItemQuantity.addTextChangedListener(
+        object : TextWatcher {
+          override fun afterTextChanged(quantity: Editable?) {
+            itemQuantity = if (quantity.isNullOrEmpty()) {
+              0
+            } else {
+              quantity.toString()
+                  .toInt()
+            }
 
-        calculateTotal()
-      }
+            calculateTotal()
+          }
 
-      override fun beforeTextChanged(
-        p0: CharSequence?,
-        p1: Int,
-        p2: Int,
-        p3: Int
-      ) {
+          override fun beforeTextChanged(
+            p0: CharSequence?,
+            p1: Int,
+            p2: Int,
+            p3: Int
+          ) {
 
-      }
+          }
 
-      override fun onTextChanged(
-        p0: CharSequence?,
-        p1: Int,
-        p2: Int,
-        p3: Int
-      ) {
+          override fun onTextChanged(
+            p0: CharSequence?,
+            p1: Int,
+            p2: Int,
+            p3: Int
+          ) {
 
-      }
-    })
+          }
+        })
 
-    etItemPrice.addTextChangedListener(object : TextWatcher {
-      override fun afterTextChanged(price: Editable?) {
-        itemPrice = if (price.isNullOrEmpty()) {
-          0.0
-        } else {
-          price.toString()
-              .toDouble()
-        }
-        calculateTotal()
-      }
+    etItemPrice.addTextChangedListener(
+        object : TextWatcher {
+          override fun afterTextChanged(price: Editable?) {
+            itemPrice = if (price.isNullOrEmpty()) {
+              0.0
+            } else {
+              price.toString()
+                  .toDouble()
+            }
+            calculateTotal()
+          }
 
-      override fun beforeTextChanged(
-        p0: CharSequence?,
-        p1: Int,
-        p2: Int,
-        p3: Int
-      ) {
-      }
+          override fun beforeTextChanged(
+            p0: CharSequence?,
+            p1: Int,
+            p2: Int,
+            p3: Int
+          ) {
+          }
 
-      override fun onTextChanged(
-        p0: CharSequence?,
-        p1: Int,
-        p2: Int,
-        p3: Int
-      ) {
-      }
+          override fun onTextChanged(
+            p0: CharSequence?,
+            p1: Int,
+            p2: Int,
+            p3: Int
+          ) {
+          }
+        })
 
-    })
+    etItemName.addTextChangedListener(
+        object : TextWatcher {
+          override fun afterTextChanged(itemNameEt: Editable?) {
+            if (!itemNameEt.isNullOrEmpty()) {
+              itemName = itemNameEt.toString()
+            }
+          }
+
+          override fun beforeTextChanged(
+            p0: CharSequence?,
+            p1: Int,
+            p2: Int,
+            p3: Int
+          ) {
+          }
+
+          override fun onTextChanged(
+            p0: CharSequence?,
+            p1: Int,
+            p2: Int,
+            p3: Int
+          ) {
+          }
+
+        })
   }
 
   private fun calculateTotal() {
@@ -116,6 +149,39 @@ class ItemDetailFragment : DialogFragment() {
     tvIgst.text = tax.toString()
     tvSgst.text = tax.toString()
     tvTotal.text = totalPrice.toString()
+
+  }
+
+  private fun addItem() {
+    if (null != itemName && itemQuantity != 0 && itemPrice != 0.0) {
+      listener.onItemAdded(
+          Item(
+              id = -1,
+              itemName = itemName!!, quantity = itemQuantity, price = itemPrice, sgst = tax,
+              igst = tax, totalPrice = totalPrice, purchaseId = -1
+          )
+      )
+      Log.d("On CLICK", "dismiss")
+      dismiss()
+    }
+
+    when {
+      null == itemName -> showToast(R.string.enter_item_name)
+      itemQuantity == 0 -> showToast(R.string.enter_item_quantity)
+      itemPrice == 0.0 -> showToast(R.string.enter_item_rate)
+    }
+  }
+
+  private fun showToast(msg: Int) {
+    Toast.makeText(activity, msg, Toast.LENGTH_SHORT)
+        .show()
+  }
+
+  override fun onAttach(context: Context?) {
+    super.onAttach(context)
+    if (context is OnClickListener) {
+      listener = context
+    }
   }
 
   override fun onStart() {
@@ -135,7 +201,7 @@ class ItemDetailFragment : DialogFragment() {
   }
 
   interface OnClickListener {
-    fun onItemAdded()
+    fun onItemAdded(item: Item)
   }
 
   companion object {
