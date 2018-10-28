@@ -14,4 +14,5 @@
   <string name="total_amount_amount_igst_sgst">Total Amount (Amount + IGST + SGST) -</string>
   <string name="done">DONE</string>
   <string name="item_db">item_db</string>
+  <string name="enter_paid_amount_by_customer">Enter Paid Amount By Customer</string>
 </resources>
