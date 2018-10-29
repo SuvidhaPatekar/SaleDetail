@@ -84,13 +84,18 @@ class SaleAdapter : RecyclerView.Adapter<SaleViewHolder>() {
       }
 
       btnPay.setOnClickListener {
-        listener.onClickPay(sale.id)
+        listener.onClickPay(sale.id, sale.balanceAmount, sale.paidAmount, sale.totalAmount)
       }
     }
   }
 
   interface Listener {
     fun onClickDelete(id: Long)
-    fun onClickPay(id: Long)
+    fun onClickPay(
+      id: Long,
+      balanceAmount: Double,
+      paidAmount: Double,
+      totalAmount: Double
+    )
   }
 }

@@ -40,11 +40,17 @@ class SaleDetailViewModel(private val saleDao: SaleDao) : BaseViewModel() {
 
   fun updatePayment(
     id: Long,
-    paid: Int
+    paid: Int,
+    balanceAmount: Double,
+    paidAmount: Double,
+    isPaid: Int
   ) {
+
     addDisposable(
         Completable.fromCallable {
-          return@fromCallable saleDao.updateBalanceAmount(id, 0.0)
+          return@fromCallable saleDao.updateBalanceAmount(
+              id, balanceAmount, paidAmount, isPaid
+          )
         }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {

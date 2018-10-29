@@ -20,4 +20,5 @@
   <string name="err_date">Please enter date</string>
   <string name="err_amount">Please enter paid amount</string>
   <string name="err_items">Please add atleast one item</string>
+  <string name="err_balance_amount">Amount should be less than the balance amount</string>
 </resources>

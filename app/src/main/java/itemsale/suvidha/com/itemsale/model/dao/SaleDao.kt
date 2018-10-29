@@ -18,9 +18,13 @@ interface SaleDao {
   @Query("DELETE FROM sale WHERE id = :id")
   fun deleteById(id: Long)
 
-  @Query("Update sale SET balanceAmount = :balanceAmount WHERE id = :id")
+  @Query(
+      "Update sale SET balanceAmount = :balanceAmount, paidAmount = :paidAmount, isPaid = :isPaid WHERE id = :id"
+  )
   fun updateBalanceAmount(
     id: Long,
-    balanceAmount: Double
+    balanceAmount: Double,
+    paidAmount: Double,
+    isPaid: Int
   )
 }
