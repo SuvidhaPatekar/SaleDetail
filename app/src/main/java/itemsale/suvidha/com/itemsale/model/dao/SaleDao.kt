@@ -12,6 +12,15 @@ interface SaleDao {
   @Insert
   fun insert(sale: Sale): Long
 
-  @Query("SELECT * FROM sale")
-  fun getAll(): Flowable<List<Sale>>
+  @Query("SELECT * FROM sale where isPaid = :paid")
+  fun getAll(paid: Int): Flowable<List<Sale>>
+
+  @Query("DELETE FROM sale WHERE id = :id")
+  fun deleteById(id: Long)
+
+  @Query("Update sale SET balanceAmount = :balanceAmount WHERE id = :id")
+  fun updateBalanceAmount(
+    id: Long,
+    balanceAmount: Double
+  )
 }

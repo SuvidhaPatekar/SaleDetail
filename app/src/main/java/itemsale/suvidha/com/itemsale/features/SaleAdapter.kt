@@ -19,9 +19,15 @@ import kotlinx.android.synthetic.main.item_sale.view.tvTotalAmount
 class SaleAdapter : RecyclerView.Adapter<SaleViewHolder>() {
 
   private var sales: List<Sale> = emptyList()
+  private lateinit var listener: Listener
 
   fun setSales(sales: List<Sale>) {
     this.sales = sales
+    notifyDataSetChanged()
+  }
+
+  fun setListener(listener: Listener) {
+    this.listener = listener
     notifyDataSetChanged()
   }
 
@@ -54,21 +60,24 @@ class SaleAdapter : RecyclerView.Adapter<SaleViewHolder>() {
     private val tvTotalAmount: TextView = itemView.tvTotalAmount
     private val tvBalanceAmount: TextView = itemView.tvBalanceAmount
 
-    init {
-      itemView.btnDelete.setOnClickListener {
-        Log.d("btn delete", "on click")
-      }
-
-      itemView.btnPay.setOnClickListener {
-        Log.d("btn pay", "on click")
-      }
-    }
-
     fun bindTo(sale: Sale) {
       tvName.text = sale.customerName
       tvDate.text = sale.date
       tvBalanceAmount.text = sale.balanceAmount.toString()
       tvTotalAmount.text = sale.totalAmount.toString()
+
+      itemView.btnDelete.setOnClickListener {
+        listener.onClickDelete(sale.id)
+      }
+
+      itemView.btnPay.setOnClickListener {
+        listener.onClickPay(sale.id)
+      }
     }
+  }
+
+  interface Listener {
+    fun onClickDelete(id: Long)
+    fun onClickPay(id: Long)
   }
 }

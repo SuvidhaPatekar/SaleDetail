@@ -9,18 +9,28 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import itemsale.suvidha.com.itemsale.R.layout
 import itemsale.suvidha.com.itemsale.features.SaleAdapter
+import itemsale.suvidha.com.itemsale.features.SaleAdapter.Listener
 import itemsale.suvidha.com.itemsale.features.salesdetails.SaleDetailViewModel.ViewState
 import itemsale.suvidha.com.itemsale.model.SaleDatabase
 import kotlinx.android.synthetic.main.sale_detail_fragment.rvSaleDetail
 
-class SaleDetailFragment : Fragment() {
+class SaleDetailFragment : Fragment(), Listener {
 
   private lateinit var saleDetailAdapter: SaleAdapter
   private lateinit var viewModelFactory: SaleDetailViewModelFactory
   private lateinit var viewModel: SaleDetailViewModel
+  private var isPaid: Int = 0
 
   companion object {
-    fun newInstance() = SaleDetailFragment()
+    private const val PAID = "PAID"
+
+    fun newInstance(
+      isPaid: Int
+    ) = SaleDetailFragment().apply {
+      arguments = Bundle(1).apply {
+        putInt(PAID, isPaid)
+      }
+    }
   }
 
   override fun onCreateView(
@@ -41,11 +51,11 @@ class SaleDetailFragment : Fragment() {
     viewModel = ViewModelProviders.of(this, viewModelFactory)
         .get(SaleDetailViewModel::class.java)
 
-    viewModel.viewState.observe(this, Observer {viewState ->
+    viewModel.viewState.observe(this, Observer { viewState ->
       handleViewState(viewState)
     })
 
-    viewModel.getAll()
+    viewModel.getAll(isPaid)
   }
 
   private fun handleViewState(viewState: ViewState?) {
@@ -60,6 +70,19 @@ class SaleDetailFragment : Fragment() {
   ) {
     super.onViewCreated(view, savedInstanceState)
     saleDetailAdapter = SaleAdapter()
+    saleDetailAdapter.setListener(this)
     rvSaleDetail.adapter = saleDetailAdapter
+
+    arguments?.let {
+      isPaid = it.getInt(PAID)
+    }
+  }
+
+  override fun onClickDelete(id: Long) {
+    viewModel.delete(id, paid = isPaid)
+  }
+
+  override fun onClickPay(id: Long) {
+    viewModel.updatePayment(id, isPaid)
   }
 }
