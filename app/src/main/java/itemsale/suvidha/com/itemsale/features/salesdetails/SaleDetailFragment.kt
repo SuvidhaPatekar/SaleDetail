@@ -1,24 +1,25 @@
 package itemsale.suvidha.com.itemsale.features.salesdetails
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProviders
 import itemsale.suvidha.com.itemsale.R.layout
 import itemsale.suvidha.com.itemsale.features.SaleAdapter
+import itemsale.suvidha.com.itemsale.model.SaleDatabase
 import kotlinx.android.synthetic.main.sale_detail_fragment.rvSaleDetail
 
 class SaleDetailFragment : Fragment() {
 
   private lateinit var saleDetailAdapter: SaleAdapter
+  private lateinit var viewModelFactory: SaleDetailViewModelFactory
+  private lateinit var viewModel: SaleDetailViewModel
 
   companion object {
     fun newInstance() = SaleDetailFragment()
   }
-
-  private lateinit var viewModel: SaleDetailViewModel
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -30,7 +31,12 @@ class SaleDetailFragment : Fragment() {
 
   override fun onActivityCreated(savedInstanceState: Bundle?) {
     super.onActivityCreated(savedInstanceState)
-    viewModel = ViewModelProviders.of(this)
+
+    viewModelFactory = SaleDetailViewModelFactory(
+        SaleDatabase.getInstance(activity!!).saleDao()
+    )
+
+    viewModel = ViewModelProviders.of(this, viewModelFactory)
         .get(SaleDetailViewModel::class.java)
   }
 

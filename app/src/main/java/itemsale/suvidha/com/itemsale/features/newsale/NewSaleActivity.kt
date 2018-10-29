@@ -9,21 +9,26 @@ import androidx.lifecycle.ViewModelProviders
 import itemsale.suvidha.com.itemsale.R
 import itemsale.suvidha.com.itemsale.features.newsale.AddItemFragment.OnClickListener
 import itemsale.suvidha.com.itemsale.features.salesdetails.SaleDetailAdapter
+import itemsale.suvidha.com.itemsale.model.SaleDatabase
 import itemsale.suvidha.com.itemsale.model.entity.Item
 import kotlinx.android.synthetic.main.activity_new_sale.fab
 import kotlinx.android.synthetic.main.activity_new_sale.toolbar
 import kotlinx.android.synthetic.main.content_new_sale.btnDone
 import kotlinx.android.synthetic.main.content_new_sale.checkbox
 import kotlinx.android.synthetic.main.content_new_sale.etAmount
+import kotlinx.android.synthetic.main.content_new_sale.etCustomerName
+import kotlinx.android.synthetic.main.content_new_sale.etDate
 import kotlinx.android.synthetic.main.content_new_sale.rvItems
-import kotlinx.android.synthetic.main.content_new_sale.tvSubtotalAmount
-import kotlinx.android.synthetic.main.content_new_sale.tvTotalQuantity
+import kotlinx.android.synthetic.main.item_subtotal.tvSubtotalAmount
+import kotlinx.android.synthetic.main.item_subtotal.tvTotalQuantity
 
 class NewSaleActivity : AppCompatActivity(), OnClickListener {
 
   private lateinit var saleDetailAdapter: SaleDetailAdapter
   private lateinit var items: ArrayList<Item>
   private lateinit var newSaleViewModel: NewSaleViewModel
+  private lateinit var viewModelFactory: NewSaleViewModelFactory
+
   private var subTotal = 0.0
   private var isPaid: Boolean = false
 
@@ -32,7 +37,11 @@ class NewSaleActivity : AppCompatActivity(), OnClickListener {
     setContentView(R.layout.activity_new_sale)
     setSupportActionBar(toolbar)
 
-    newSaleViewModel = ViewModelProviders.of(this)
+    viewModelFactory = NewSaleViewModelFactory(
+        SaleDatabase.getInstance(applicationContext!!).saleDao()
+    )
+
+    newSaleViewModel = ViewModelProviders.of(this, viewModelFactory)
         .get(NewSaleViewModel::class.java)
 
     newSaleViewModel.viewState.observe(this, Observer { viewState ->
@@ -43,11 +52,13 @@ class NewSaleActivity : AppCompatActivity(), OnClickListener {
         checkbox.isChecked = it.isPaid
       }
     })
+
     fab.setOnClickListener {
       val newFragment =
         AddItemFragment.newInstance()
       newFragment.show(supportFragmentManager, "ITEM DETAILS")
     }
+
     items = ArrayList()
     saleDetailAdapter = SaleDetailAdapter()
     rvItems.adapter = saleDetailAdapter
@@ -82,7 +93,10 @@ class NewSaleActivity : AppCompatActivity(), OnClickListener {
     })
 
     btnDone.setOnClickListener {
-
+      newSaleViewModel.addSale(
+          etCustomerName.text.toString(), etDate.text.toString(),
+          etAmount.text.toString().toDouble()
+      )
     }
   }
 

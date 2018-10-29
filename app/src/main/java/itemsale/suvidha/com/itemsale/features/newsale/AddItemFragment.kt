@@ -2,7 +2,6 @@ package itemsale.suvidha.com.itemsale.features.newsale
 
 import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.DialogFragment
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -10,8 +9,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.ViewModelProviders
 import itemsale.suvidha.com.itemsale.R
 import itemsale.suvidha.com.itemsale.R.layout
+import itemsale.suvidha.com.itemsale.model.SaleDatabase
 import itemsale.suvidha.com.itemsale.model.entity.Item
 import itemsale.suvidha.com.itemsale.round2Decimal
 import kotlinx.android.synthetic.main.fragment_item_detail.btnDone
@@ -30,6 +32,9 @@ class AddItemFragment : DialogFragment() {
   private var tax = 0.0
   private var amount = 0.0
   private var itemName: String? = null
+
+  private lateinit var viewModel: AddItemViewModel
+  private lateinit var viewModelFactory: AddItemViewModelFactory
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -198,6 +203,17 @@ class AddItemFragment : DialogFragment() {
       val height = ViewGroup.LayoutParams.WRAP_CONTENT
       dialog.window?.setLayout(width, height)
     }
+  }
+
+  override fun onActivityCreated(savedInstanceState: Bundle?) {
+    super.onActivityCreated(savedInstanceState)
+    viewModelFactory = AddItemViewModelFactory(
+        SaleDatabase.getInstance(activity!!).itemDao()
+    )
+
+    viewModel = ViewModelProviders.of(this, viewModelFactory)
+        .get(AddItemViewModel::class.java)
+
   }
 
   interface OnClickListener {
