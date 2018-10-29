@@ -3,6 +3,7 @@ package itemsale.suvidha.com.itemsale.features.newsale
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -45,12 +46,7 @@ class NewSaleActivity : AppCompatActivity(), OnClickListener {
         .get(NewSaleViewModel::class.java)
 
     newSaleViewModel.viewState.observe(this, Observer { viewState ->
-      viewState?.let {
-        saleDetailAdapter.setItems(it.items)
-        tvSubtotalAmount.text = it.subTotal.toString()
-        tvTotalQuantity.text = it.totalQuantity.toString()
-        checkbox.isChecked = it.isPaid
-      }
+      handleViewState(viewState)
     })
 
     fab.setOnClickListener {
@@ -62,16 +58,14 @@ class NewSaleActivity : AppCompatActivity(), OnClickListener {
     items = ArrayList()
     saleDetailAdapter = SaleDetailAdapter()
     rvItems.adapter = saleDetailAdapter
-    setData()
 
     etAmount.addTextChangedListener(object : TextWatcher {
       override fun afterTextChanged(text: Editable?) {
-        isPaid = if (!text.isNullOrEmpty()) {
-          text.toString().toDouble() == subTotal
+        if (!text.isNullOrEmpty()) {
+          newSaleViewModel.checkPaidAmount(text.toString().toDouble())
         } else {
-          false
+          newSaleViewModel.checkPaidAmount(0.0)
         }
-        setData()
       }
 
       override fun beforeTextChanged(
@@ -95,17 +89,50 @@ class NewSaleActivity : AppCompatActivity(), OnClickListener {
     btnDone.setOnClickListener {
       newSaleViewModel.addSale(
           etCustomerName.text.toString(), etDate.text.toString(),
-          etAmount.text.toString().toDouble()
+          etAmount.text.toString()
       )
     }
   }
 
-  private fun setData() {
+  private fun handleViewState(viewState: NewSaleViewModel.ViewState?) {
+    viewState?.let {
+      saleDetailAdapter.setItems(it.items)
+      tvSubtotalAmount.text = it.subTotal.toString()
+      tvTotalQuantity.text = it.totalQuantity.toString()
+      checkbox.isChecked = it.isPaid
 
+      if (it.isGreaterAmount) {
+        showToast(R.string.err_greater_amount)
+      }
+
+      if (it.isNullCustomerName) {
+        showToast(R.string.err_name)
+      }
+
+      if (it.isNullAmount) {
+        showToast(R.string.err_amount)
+      }
+
+      if (it.isNullDate) {
+        showToast(R.string.err_date)
+      }
+
+      if(it.emptyItems){
+        showToast(R.string.err_items)
+      }
+
+      if (it.isDone) {
+        finish()
+      }
+    }
+  }
+
+  private fun showToast(msg: Int) {
+    Toast.makeText(this, msg, Toast.LENGTH_SHORT)
+        .show()
   }
 
   override fun onItemAdded(item: Item) {
     newSaleViewModel.addItem(item)
-    setData()
   }
 }

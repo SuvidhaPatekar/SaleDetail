@@ -1,6 +1,7 @@
 package itemsale.suvidha.com.itemsale.features.newsale
 
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.internal.operators.completable.CompletableFromCallable
 import itemsale.suvidha.com.itemsale.features.base.BaseViewModel
 import itemsale.suvidha.com.itemsale.model.dao.SaleDao
 import itemsale.suvidha.com.itemsale.model.entity.Item
@@ -16,14 +17,23 @@ class NewSaleViewModel(private val saleDao: SaleDao) : BaseViewModel() {
     val items: List<Item>,
     val isPaid: Boolean,
     val totalQuantity: Int,
-    val subTotal: Double
+    val subTotal: Double,
+    val isDone: Boolean,
+    val isGreaterAmount: Boolean,
+    val isNullCustomerName: Boolean,
+    val isNullDate: Boolean,
+    val isNullAmount: Boolean,
+    val paidAmount: Double,
+    val emptyItems: Boolean
   )
 
   init {
-    viewState.value = ViewState(emptyList(), false, 0, 0.0)
+    viewState.value = ViewState(
+        emptyList(), false, 0, 0.0, false, false, false, false, false, 0.0, false
+    )
   }
 
-  fun getCurrentViewState() = viewState.value!!
+  private fun getCurrentViewState() = viewState.value!!
 
   fun addItem(item: Item) {
     val currentViewState = getCurrentViewState()
@@ -37,18 +47,98 @@ class NewSaleViewModel(private val saleDao: SaleDao) : BaseViewModel() {
     subTotal = (subTotal + item.totalPrice).round2Decimal()
 
     viewState.value =
-        (ViewState(currentItems, getCurrentViewState().isPaid, currentQuantity, subTotal))
+        (ViewState(
+            currentItems, getCurrentViewState().isPaid, currentQuantity, subTotal,
+            getCurrentViewState().isDone, getCurrentViewState().isGreaterAmount,
+            getCurrentViewState().isNullCustomerName, getCurrentViewState().isNullDate,
+            getCurrentViewState().isNullAmount, getCurrentViewState().paidAmount,
+            getCurrentViewState().emptyItems
+        ))
+
+    checkPaidAmount(getCurrentViewState().paidAmount)
+  }
+
+  fun checkPaidAmount(amount: Double) {
+    val isPaid: Boolean
+    val isGreaterAmount: Boolean
+    when {
+      amount == getCurrentViewState().subTotal -> {
+        isGreaterAmount = false
+        isPaid = true
+      }
+      amount < getCurrentViewState().subTotal -> {
+        isGreaterAmount = false
+        isPaid = false
+      }
+      else -> {
+        isPaid = false
+        isGreaterAmount = true
+      }
+    }
+
+    viewState.value =
+        (ViewState(
+            getCurrentViewState().items, isPaid,
+            getCurrentViewState().totalQuantity, getCurrentViewState().subTotal,
+            getCurrentViewState().isDone, isGreaterAmount, getCurrentViewState().isNullCustomerName,
+            getCurrentViewState().isNullDate,
+            getCurrentViewState().isNullAmount, amount, getCurrentViewState().emptyItems
+        ))
   }
 
   fun addSale(
-    customerName: String,
-    date: String,
-    paidAmount: Double
+    customerName: String?,
+    date: String?,
+    paidAmount: String?
   ) {
+    val state = getCurrentViewState()
+    if (customerName.isNullOrEmpty()) {
+      viewState.value = ViewState(
+          state.items, state.isPaid, state.totalQuantity, state.subTotal, state.isDone,
+          state.isGreaterAmount, true, state.isNullDate, state.isNullAmount, state.paidAmount,
+          false
+      )
+      return
+    }
+
+    if (date.isNullOrEmpty()) {
+      viewState.value = ViewState(
+          state.items, state.isPaid, state.totalQuantity, state.subTotal, state.isDone,
+          state.isGreaterAmount, false, true, false, state.paidAmount, false
+      )
+      return
+    }
+
+
+    if (getCurrentViewState().items.isEmpty()) {
+      viewState.value = ViewState(
+          state.items, state.isPaid, state.totalQuantity, state.subTotal, state.isDone,
+          state.isGreaterAmount, false, false, false, state.paidAmount, true
+      )
+      return
+    }
+
+
+    if (paidAmount.isNullOrEmpty()) {
+      viewState.value = ViewState(
+          state.items, state.isPaid, state.totalQuantity, state.subTotal, state.isDone,
+          state.isGreaterAmount, false, false, true, state.paidAmount, false
+      )
+      return
+    }
+
+
+
     sale = Sale(
-        customerName = customerName, date = date, isPaid = getCurrentViewState().isPaid,
-        paidAmount = paidAmount, id = -1
+        customerName = customerName!!, date = date!!, isPaid = state.isPaid,
+        paidAmount = paidAmount!!.toDouble(), id = -1
     )
-    saleDao.insert(sale)
+
+    CompletableFromCallable {
+      saleDao.insert(sale)
+    }
+
+    viewState.value =
+        ViewState(emptyList(), false, 0, 0.0, true, false, false, false, false, 0.0, false)
   }
 }

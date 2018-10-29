@@ -15,4 +15,9 @@
   <string name="done">DONE</string>
   <string name="item_db">item_db</string>
   <string name="enter_paid_amount_by_customer">Enter Paid Amount By Customer</string>
+  <string name="err_greater_amount">Please enter less amount than the subTotal</string>
+  <string name="err_name">Please enter customer name</string>
+  <string name="err_date">Please enter date</string>
+  <string name="err_amount">Please enter paid amount</string>
+  <string name="err_items">Please add atleast one item</string>
 </resources>
