@@ -60,7 +60,7 @@ class SaleDetailFragment : Fragment(), Listener {
 
   private fun handleViewState(viewState: ViewState?) {
     viewState?.let {
-      saleDetailAdapter.setSales(it.sales)
+      saleDetailAdapter.setSales(it.sales, isPaid)
     }
   }
 

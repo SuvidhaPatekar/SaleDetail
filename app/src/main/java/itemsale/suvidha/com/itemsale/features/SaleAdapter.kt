@@ -1,9 +1,9 @@
 package itemsale.suvidha.com.itemsale.features
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import itemsale.suvidha.com.itemsale.R
@@ -19,10 +19,15 @@ import kotlinx.android.synthetic.main.item_sale.view.tvTotalAmount
 class SaleAdapter : RecyclerView.Adapter<SaleViewHolder>() {
 
   private var sales: List<Sale> = emptyList()
+  private var paid: Int = 0
   private lateinit var listener: Listener
 
-  fun setSales(sales: List<Sale>) {
+  fun setSales(
+    sales: List<Sale>,
+    paid: Int
+  ) {
     this.sales = sales
+    this.paid = paid
     notifyDataSetChanged()
   }
 
@@ -59,6 +64,8 @@ class SaleAdapter : RecyclerView.Adapter<SaleViewHolder>() {
     private val tvDate: TextView = itemView.tvDate
     private val tvTotalAmount: TextView = itemView.tvTotalAmount
     private val tvBalanceAmount: TextView = itemView.tvBalanceAmount
+    private val btnPay: Button = itemView.btnPay
+    private val btnDelete: Button = itemView.btnDelete
 
     fun bindTo(sale: Sale) {
       tvName.text = sale.customerName
@@ -66,11 +73,17 @@ class SaleAdapter : RecyclerView.Adapter<SaleViewHolder>() {
       tvBalanceAmount.text = sale.balanceAmount.toString()
       tvTotalAmount.text = sale.totalAmount.toString()
 
-      itemView.btnDelete.setOnClickListener {
+      if (paid == 1) {
+        btnPay.visibility = View.GONE
+      } else {
+        btnPay.visibility = View.VISIBLE
+      }
+
+      btnDelete.setOnClickListener {
         listener.onClickDelete(sale.id)
       }
 
-      itemView.btnPay.setOnClickListener {
+      btnPay.setOnClickListener {
         listener.onClickPay(sale.id)
       }
     }
