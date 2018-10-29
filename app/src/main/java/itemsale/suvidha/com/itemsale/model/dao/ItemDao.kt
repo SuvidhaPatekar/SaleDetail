@@ -1,7 +1,7 @@
 package itemsale.suvidha.com.itemsale.model.dao
 
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Insert
+import androidx.room.Dao
+import androidx.room.Insert
 import itemsale.suvidha.com.itemsale.model.entity.Item
 
 @Dao

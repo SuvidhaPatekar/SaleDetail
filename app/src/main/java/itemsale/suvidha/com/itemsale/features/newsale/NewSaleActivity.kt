@@ -1,16 +1,15 @@
 package itemsale.suvidha.com.itemsale.features.newsale
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import itemsale.suvidha.com.itemsale.R
 import itemsale.suvidha.com.itemsale.features.newsale.AddItemFragment.OnClickListener
 import itemsale.suvidha.com.itemsale.features.salesdetails.SaleDetailAdapter
 import itemsale.suvidha.com.itemsale.model.entity.Item
-import itemsale.suvidha.com.itemsale.round2Decimal
 import kotlinx.android.synthetic.main.activity_new_sale.fab
 import kotlinx.android.synthetic.main.activity_new_sale.toolbar
 import kotlinx.android.synthetic.main.content_new_sale.btnDone
@@ -24,8 +23,8 @@ class NewSaleActivity : AppCompatActivity(), OnClickListener {
 
   private lateinit var saleDetailAdapter: SaleDetailAdapter
   private lateinit var items: ArrayList<Item>
+  private lateinit var newSaleViewModel: NewSaleViewModel
   private var subTotal = 0.0
-  private var quantity = 0
   private var isPaid: Boolean = false
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +32,17 @@ class NewSaleActivity : AppCompatActivity(), OnClickListener {
     setContentView(R.layout.activity_new_sale)
     setSupportActionBar(toolbar)
 
+    newSaleViewModel = ViewModelProviders.of(this)
+        .get(NewSaleViewModel::class.java)
+
+    newSaleViewModel.viewState.observe(this, Observer { viewState ->
+      viewState?.let {
+        saleDetailAdapter.setItems(it.items)
+        tvSubtotalAmount.text = it.subTotal.toString()
+        tvTotalQuantity.text = it.totalQuantity.toString()
+        checkbox.isChecked = it.isPaid
+      }
+    })
     fab.setOnClickListener {
       val newFragment =
         AddItemFragment.newInstance()
@@ -40,11 +50,6 @@ class NewSaleActivity : AppCompatActivity(), OnClickListener {
     }
     items = ArrayList()
     saleDetailAdapter = SaleDetailAdapter()
-    val dividerItemDecoration = DividerItemDecoration(
-        rvItems.context,
-        RecyclerView.VERTICAL
-    )
-    rvItems.addItemDecoration(dividerItemDecoration)
     rvItems.adapter = saleDetailAdapter
     setData()
 
@@ -82,16 +87,11 @@ class NewSaleActivity : AppCompatActivity(), OnClickListener {
   }
 
   private fun setData() {
-    tvSubtotalAmount.text = subTotal.toString()
-    tvTotalQuantity.text = quantity.toString()
-    checkbox.isChecked = isPaid
+
   }
 
   override fun onItemAdded(item: Item) {
-    items.add(0, item)
-    saleDetailAdapter.setItems(items)
-    quantity += item.quantity
-    subTotal = (subTotal + item.totalPrice).round2Decimal()
+    newSaleViewModel.addItem(item)
     setData()
   }
 }
