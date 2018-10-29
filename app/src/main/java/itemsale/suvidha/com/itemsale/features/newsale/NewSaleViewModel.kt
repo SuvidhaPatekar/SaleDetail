@@ -133,10 +133,12 @@ class NewSaleViewModel(
       )
       return
     }
-
+    val balanceAmount =
+      (getCurrentViewState().subTotal - getCurrentViewState().paidAmount).round2Decimal()
     sale = Sale(
         customerName = customerName!!, date = date!!, isPaid = state.isPaid,
-        paidAmount = paidAmount!!.toDouble()
+        paidAmount = paidAmount!!.toDouble(),
+        balanceAmount = balanceAmount, totalAmount = getCurrentViewState().subTotal
     )
 
     addDisposable(

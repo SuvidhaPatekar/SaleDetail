@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import itemsale.suvidha.com.itemsale.R.layout
 import itemsale.suvidha.com.itemsale.features.SaleAdapter
+import itemsale.suvidha.com.itemsale.features.salesdetails.SaleDetailViewModel.ViewState
 import itemsale.suvidha.com.itemsale.model.SaleDatabase
 import kotlinx.android.synthetic.main.sale_detail_fragment.rvSaleDetail
 
@@ -38,6 +40,18 @@ class SaleDetailFragment : Fragment() {
 
     viewModel = ViewModelProviders.of(this, viewModelFactory)
         .get(SaleDetailViewModel::class.java)
+
+    viewModel.viewState.observe(this, Observer {viewState ->
+      handleViewState(viewState)
+    })
+
+    viewModel.getAll()
+  }
+
+  private fun handleViewState(viewState: ViewState?) {
+    viewState?.let {
+      saleDetailAdapter.setSales(it.sales)
+    }
   }
 
   override fun onViewCreated(

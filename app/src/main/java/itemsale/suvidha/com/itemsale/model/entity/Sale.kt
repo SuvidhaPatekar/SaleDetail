@@ -9,5 +9,7 @@ data class Sale(
   val customerName: String,
   val date: String,
   val paidAmount: Double,
-  val isPaid: Boolean
+  val isPaid: Boolean,
+  val balanceAmount: Double,
+  val totalAmount: Double
 )

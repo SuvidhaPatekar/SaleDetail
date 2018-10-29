@@ -1,14 +1,14 @@
 package itemsale.suvidha.com.itemsale.features
 
-import androidx.recyclerview.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import itemsale.suvidha.com.itemsale.R
-import itemsale.suvidha.com.itemsale.R.layout
 import itemsale.suvidha.com.itemsale.features.SaleAdapter.SaleViewHolder
+import itemsale.suvidha.com.itemsale.model.entity.Sale
 import kotlinx.android.synthetic.main.item_sale.view.btnDelete
 import kotlinx.android.synthetic.main.item_sale.view.btnPay
 import kotlinx.android.synthetic.main.item_sale.view.tvBalanceAmount
@@ -17,6 +17,14 @@ import kotlinx.android.synthetic.main.item_sale.view.tvName
 import kotlinx.android.synthetic.main.item_sale.view.tvTotalAmount
 
 class SaleAdapter : RecyclerView.Adapter<SaleViewHolder>() {
+
+  private var sales: List<Sale> = emptyList()
+
+  fun setSales(sales: List<Sale>) {
+    this.sales = sales
+    notifyDataSetChanged()
+  }
+
   override fun onCreateViewHolder(
     viewGroup: ViewGroup,
     viewType: Int
@@ -28,14 +36,14 @@ class SaleAdapter : RecyclerView.Adapter<SaleViewHolder>() {
   }
 
   override fun getItemCount(): Int {
-    return 3
+    return sales.size
   }
 
   override fun onBindViewHolder(
     holder: SaleViewHolder,
     position: Int
   ) {
-    holder.bindTo()
+    holder.bindTo(sales[position])
   }
 
   inner class SaleViewHolder(
@@ -56,11 +64,11 @@ class SaleAdapter : RecyclerView.Adapter<SaleViewHolder>() {
       }
     }
 
-    fun bindTo() {
-      tvName.text = "Suvidha"
-      tvDate.text = "17/12/1789"
-      tvBalanceAmount.text = "1000"
-      tvTotalAmount.text = "1000"
+    fun bindTo(sale: Sale) {
+      tvName.text = sale.customerName
+      tvDate.text = sale.date
+      tvBalanceAmount.text = sale.balanceAmount.toString()
+      tvTotalAmount.text = sale.totalAmount.toString()
     }
   }
 }
