@@ -10,17 +10,17 @@ import androidx.room.PrimaryKey
     foreignKeys = [ForeignKey(
         entity = Sale::class,
         parentColumns = arrayOf("id"),
-        childColumns = arrayOf("purchaseId"),
+        childColumns = arrayOf("saleId"),
         onDelete = CASCADE
     )]
 )
 data class Item(
-  @PrimaryKey(autoGenerate = true) val id: Int,
+  @PrimaryKey(autoGenerate = true) var id: Long = 0,
   val itemName: String,
   val quantity: Int,
   val price: Double,
   val sgst: Double,
   val igst: Double,
   val totalPrice: Double,
-  val purchaseId: Int
+  val saleId: Long
 )

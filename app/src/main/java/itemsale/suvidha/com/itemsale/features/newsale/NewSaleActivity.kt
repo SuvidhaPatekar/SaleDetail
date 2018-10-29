@@ -8,8 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import itemsale.suvidha.com.itemsale.R
+import itemsale.suvidha.com.itemsale.convertToString
 import itemsale.suvidha.com.itemsale.features.newsale.AddItemFragment.OnClickListener
 import itemsale.suvidha.com.itemsale.features.salesdetails.SaleDetailAdapter
+import itemsale.suvidha.com.itemsale.getCurrentDateTime
 import itemsale.suvidha.com.itemsale.model.SaleDatabase
 import itemsale.suvidha.com.itemsale.model.entity.Item
 import kotlinx.android.synthetic.main.activity_new_sale.fab
@@ -18,8 +20,8 @@ import kotlinx.android.synthetic.main.content_new_sale.btnDone
 import kotlinx.android.synthetic.main.content_new_sale.checkbox
 import kotlinx.android.synthetic.main.content_new_sale.etAmount
 import kotlinx.android.synthetic.main.content_new_sale.etCustomerName
-import kotlinx.android.synthetic.main.content_new_sale.etDate
 import kotlinx.android.synthetic.main.content_new_sale.rvItems
+import kotlinx.android.synthetic.main.content_new_sale.tvDate
 import kotlinx.android.synthetic.main.item_subtotal.tvSubtotalAmount
 import kotlinx.android.synthetic.main.item_subtotal.tvTotalQuantity
 
@@ -36,7 +38,8 @@ class NewSaleActivity : AppCompatActivity(), OnClickListener {
     setSupportActionBar(toolbar)
 
     viewModelFactory = NewSaleViewModelFactory(
-        SaleDatabase.getInstance(applicationContext!!).saleDao()
+        SaleDatabase.getInstance(applicationContext!!).saleDao(),
+        SaleDatabase.getInstance(applicationContext!!).itemDao()
     )
 
     newSaleViewModel = ViewModelProviders.of(this, viewModelFactory)
@@ -54,6 +57,7 @@ class NewSaleActivity : AppCompatActivity(), OnClickListener {
 
     items = ArrayList()
     saleDetailAdapter = SaleDetailAdapter()
+    rvItems.isNestedScrollingEnabled = false
     rvItems.adapter = saleDetailAdapter
 
     etAmount.addTextChangedListener(object : TextWatcher {
@@ -83,9 +87,12 @@ class NewSaleActivity : AppCompatActivity(), OnClickListener {
 
     })
 
+    val date = getCurrentDateTime()
+    val dateString = date.convertToString()
+    tvDate.text = dateString
     btnDone.setOnClickListener {
       newSaleViewModel.addSale(
-          etCustomerName.text.toString(), etDate.text.toString(),
+          etCustomerName.text.toString(), dateString,
           etAmount.text.toString()
       )
     }

@@ -188,10 +188,9 @@ class AddItemFragment : DialogFragment() {
       if (it.itemAdded) {
         listener.onItemAdded(
             Item(
-                id = -1,
                 itemName = itemName!!, quantity = it.itemQuantity, price = it.itemPrice,
                 sgst = it.tax,
-                igst = it.tax, totalPrice = it.totalPrice, purchaseId = -1
+                igst = it.tax, totalPrice = it.totalPrice, saleId = -1
             )
         )
         dismiss()

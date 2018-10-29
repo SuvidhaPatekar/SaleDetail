@@ -8,5 +8,5 @@ import itemsale.suvidha.com.itemsale.model.entity.Sale
 interface SaleDao {
 
   @Insert
-  fun insert(sale: Sale)
+  fun insert(sale: Sale) : Long
 }

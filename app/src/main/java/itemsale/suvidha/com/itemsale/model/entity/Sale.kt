@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Sale(
-  @PrimaryKey val id: Int,
+  @PrimaryKey(autoGenerate = true) var id: Long = 0,
   val customerName: String,
   val date: String,
   val paidAmount: Double,

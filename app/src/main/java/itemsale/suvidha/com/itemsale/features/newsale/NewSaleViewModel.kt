@@ -1,14 +1,21 @@
 package itemsale.suvidha.com.itemsale.features.newsale
 
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.internal.operators.completable.CompletableFromCallable
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.BiConsumer
+import io.reactivex.schedulers.Schedulers
 import itemsale.suvidha.com.itemsale.features.base.BaseViewModel
+import itemsale.suvidha.com.itemsale.model.dao.ItemDao
 import itemsale.suvidha.com.itemsale.model.dao.SaleDao
 import itemsale.suvidha.com.itemsale.model.entity.Item
 import itemsale.suvidha.com.itemsale.model.entity.Sale
 import itemsale.suvidha.com.itemsale.round2Decimal
 
-class NewSaleViewModel(private val saleDao: SaleDao) : BaseViewModel() {
+class NewSaleViewModel(
+  private val saleDao: SaleDao,
+  private val itemDao: ItemDao
+) : BaseViewModel() {
 
   val viewState: MutableLiveData<ViewState> = MutableLiveData()
   private lateinit var sale: Sale
@@ -50,9 +57,9 @@ class NewSaleViewModel(private val saleDao: SaleDao) : BaseViewModel() {
         (ViewState(
             currentItems, getCurrentViewState().isPaid, currentQuantity, subTotal,
             getCurrentViewState().isDone, getCurrentViewState().isGreaterAmount,
-            getCurrentViewState().isNullCustomerName, getCurrentViewState().isNullDate,
-            getCurrentViewState().isNullAmount, getCurrentViewState().paidAmount,
-            getCurrentViewState().emptyItems
+            false, false,
+            false, getCurrentViewState().paidAmount,
+            false
         ))
 
     checkPaidAmount(getCurrentViewState().paidAmount)
@@ -129,13 +136,44 @@ class NewSaleViewModel(private val saleDao: SaleDao) : BaseViewModel() {
 
     sale = Sale(
         customerName = customerName!!, date = date!!, isPaid = state.isPaid,
-        paidAmount = paidAmount!!.toDouble(), id = -1
+        paidAmount = paidAmount!!.toDouble()
     )
 
-    CompletableFromCallable {
-      saleDao.insert(sale)
+    addDisposable(
+        Single.fromCallable {
+          return@fromCallable saleDao.insert(sale)
+        }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(BiConsumer { id, throwable ->
+              if (throwable != null) {
+                throwable.printStackTrace()
+                return@BiConsumer
+              }
+              addItemsInDbForSale(id)
+            })
+    )
+  }
+
+  private fun addItemsInDbForSale(saleId: Long) {
+    val items = getCurrentViewState().items
+
+    val itemsTobeInserted = mutableListOf<Item>()
+    items.forEach {
+      itemsTobeInserted.add(it.copy(saleId = saleId))
     }
 
+    addDisposable(
+        Single.fromCallable {
+          return@fromCallable itemDao.addItems(itemsTobeInserted)
+        }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(BiConsumer { id, throwable ->
+              if (throwable != null) {
+                //todo show toast
+                return@BiConsumer
+              }
+            })
+    )
     viewState.value =
         ViewState(emptyList(), false, 0, 0.0, true, false, false, false, false, 0.0, false)
   }
