@@ -4,18 +4,18 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import itemsale.suvidha.com.itemsale.R
 import itemsale.suvidha.com.itemsale.R.layout
+import itemsale.suvidha.com.itemsale.features.newsale.AddItemViewModel.ViewState
 import itemsale.suvidha.com.itemsale.model.SaleDatabase
 import itemsale.suvidha.com.itemsale.model.entity.Item
-import itemsale.suvidha.com.itemsale.round2Decimal
 import kotlinx.android.synthetic.main.fragment_item_detail.btnDone
 import kotlinx.android.synthetic.main.fragment_item_detail.etItemName
 import kotlinx.android.synthetic.main.fragment_item_detail.etItemPrice
@@ -26,11 +26,6 @@ import kotlinx.android.synthetic.main.fragment_item_detail.tvTotal
 
 class AddItemFragment : DialogFragment() {
   private lateinit var listener: OnClickListener
-  private var itemQuantity = 0
-  private var itemPrice = 0.0
-  private var totalPrice = 0.0
-  private var tax = 0.0
-  private var amount = 0.0
   private var itemName: String? = null
 
   private lateinit var viewModel: AddItemViewModel
@@ -50,20 +45,20 @@ class AddItemFragment : DialogFragment() {
   ) {
     super.onViewCreated(view, savedInstanceState)
     btnDone.setOnClickListener {
-      addItem()
+      viewModel.addItem(itemName = itemName)
     }
-    calculateTotal()
     etItemQuantity.addTextChangedListener(
         object : TextWatcher {
           override fun afterTextChanged(quantity: Editable?) {
-            itemQuantity = if (quantity.isNullOrEmpty()) {
-              0
-            } else {
-              quantity.toString()
-                  .toInt()
-            }
 
-            calculateTotal()
+            if (quantity.isNullOrEmpty()) {
+              viewModel.addQuantity(0)
+            } else {
+              viewModel.addQuantity(
+                  quantity.toString()
+                      .toInt()
+              )
+            }
           }
 
           override fun beforeTextChanged(
@@ -88,13 +83,13 @@ class AddItemFragment : DialogFragment() {
     etItemPrice.addTextChangedListener(
         object : TextWatcher {
           override fun afterTextChanged(price: Editable?) {
-            itemPrice = if (price.isNullOrEmpty()) {
-              0.0
+            if (price.isNullOrEmpty()) {
+              viewModel.addPrice(0.0)
             } else {
-              price.toString()
-                  .toDouble()
+              viewModel.addPrice(
+                  price.toString().toDouble()
+              )
             }
-            calculateTotal()
           }
 
           override fun beforeTextChanged(
@@ -141,53 +136,6 @@ class AddItemFragment : DialogFragment() {
         })
   }
 
-  private fun calculateTotal() {
-    amount = (itemPrice * itemQuantity).round2Decimal()
-    tax = (amount * 0.09).round2Decimal()
-    totalPrice = (amount + tax + tax).round2Decimal()
-    Log.d(
-        "total",
-        "itemPrice = $itemPrice,  itemQuantity = $itemQuantity, amount = $amount, tax = $tax, totalPrice = $totalPrice"
-    )
-
-    tvIgst.text = tax.toString()
-    tvSgst.text = tax.toString()
-    tvTotal.text = totalPrice.toString()
-
-  }
-
-  private fun addItem() {
-    if (itemName == null) {
-      showToast(R.string.enter_item_name)
-      return
-    }
-
-    if (itemQuantity == 0) {
-      showToast(R.string.enter_item_quantity)
-      return
-    }
-
-    if (itemPrice == 0.0) {
-      showToast(R.string.enter_item_rate)
-      return
-    }
-
-    listener.onItemAdded(
-        Item(
-            id = -1,
-            itemName = itemName!!, quantity = itemQuantity, price = itemPrice, sgst = tax,
-            igst = tax, totalPrice = totalPrice, purchaseId = -1
-        )
-    )
-    Log.d("On CLICK", "dismiss")
-    dismiss()
-  }
-
-  private fun showToast(msg: Int) {
-    Toast.makeText(activity, msg, Toast.LENGTH_SHORT)
-        .show()
-  }
-
   override fun onAttach(context: Context?) {
     super.onAttach(context)
     if (context is OnClickListener) {
@@ -214,13 +162,53 @@ class AddItemFragment : DialogFragment() {
     viewModel = ViewModelProviders.of(this, viewModelFactory)
         .get(AddItemViewModel::class.java)
 
+    viewModel.viewState.observe(this, Observer { viewState ->
+      handleViewState(viewState)
+    })
   }
 
-  interface OnClickListener {
-    fun onItemAdded(item: Item)
+  private fun handleViewState(viewState: ViewState?) {
+    viewState?.let {
+      tvIgst.text = it.tax.toString()
+      tvSgst.text = it.tax.toString()
+      tvTotal.text = it.totalPrice.toString()
+
+      if (it.isNullName) {
+        showToast(R.string.enter_item_name)
+      }
+
+      if (it.isQuantityAdded) {
+        showToast(R.string.enter_item_quantity)
+      }
+
+      if (it.isPriceAdded) {
+        showToast(R.string.enter_item_rate)
+      }
+
+      if (it.itemAdded) {
+        listener.onItemAdded(
+            Item(
+                id = -1,
+                itemName = itemName!!, quantity = it.itemQuantity, price = it.itemPrice,
+                sgst = it.tax,
+                igst = it.tax, totalPrice = it.totalPrice, purchaseId = -1
+            )
+        )
+        dismiss()
+      }
+    }
   }
 
   companion object {
     fun newInstance() = AddItemFragment()
+  }
+
+  private fun showToast(msg: Int) {
+    Toast.makeText(activity, msg, Toast.LENGTH_SHORT)
+        .show()
+  }
+
+  interface OnClickListener {
+    fun onItemAdded(item: Item)
   }
 }

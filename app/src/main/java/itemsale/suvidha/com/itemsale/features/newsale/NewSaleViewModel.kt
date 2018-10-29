@@ -127,8 +127,6 @@ class NewSaleViewModel(private val saleDao: SaleDao) : BaseViewModel() {
       return
     }
 
-
-
     sale = Sale(
         customerName = customerName!!, date = date!!, isPaid = state.isPaid,
         paidAmount = paidAmount!!.toDouble(), id = -1

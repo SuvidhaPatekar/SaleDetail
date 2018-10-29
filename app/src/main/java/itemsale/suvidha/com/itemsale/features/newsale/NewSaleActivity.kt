@@ -30,9 +30,6 @@ class NewSaleActivity : AppCompatActivity(), OnClickListener {
   private lateinit var newSaleViewModel: NewSaleViewModel
   private lateinit var viewModelFactory: NewSaleViewModelFactory
 
-  private var subTotal = 0.0
-  private var isPaid: Boolean = false
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_new_sale)
@@ -117,7 +114,7 @@ class NewSaleActivity : AppCompatActivity(), OnClickListener {
         showToast(R.string.err_date)
       }
 
-      if(it.emptyItems){
+      if (it.emptyItems) {
         showToast(R.string.err_items)
       }
 
