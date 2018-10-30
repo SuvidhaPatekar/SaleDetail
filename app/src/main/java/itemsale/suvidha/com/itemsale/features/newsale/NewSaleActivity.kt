@@ -60,7 +60,6 @@ class NewSaleActivity : AppCompatActivity(), AddItemDoneClickListener {
 
     items = ArrayList()
     saleDetailAdapter = SaleDetailAdapter()
-    rvItems.isNestedScrollingEnabled = false
     rvItems.adapter = saleDetailAdapter
 
     RxTextView.textChanges(etAmount)
