@@ -97,7 +97,10 @@ class SaleDetailFragment : Fragment(), Listener {
     val alert = AlertDialog.Builder(activity)
 
     val editText = EditText(context)
-    editText.inputType = InputType.TYPE_NUMBER_FLAG_DECIMAL
+    editText.inputType =
+        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL or
+        InputType.TYPE_NUMBER_FLAG_SIGNED
+
 
     alert.setTitle("Pay Balance Amount")
     alert.setView(editText)
