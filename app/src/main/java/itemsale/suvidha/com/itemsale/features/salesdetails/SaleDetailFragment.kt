@@ -102,7 +102,7 @@ class SaleDetailFragment : Fragment(), Listener {
     alert.setTitle("Pay Balance Amount")
     alert.setView(editText)
 
-    alert.setPositiveButton("YES") { p0, p1 ->
+    alert.setPositiveButton("YES") { _, _ ->
       if (!editText.text.isNullOrEmpty()) {
         val amount = editText.text.toString()
 
@@ -126,7 +126,7 @@ class SaleDetailFragment : Fragment(), Listener {
       }
     }
 
-    alert.setNegativeButton("NO") { p0, p1 -> }
+    alert.setNegativeButton("NO") { _, _ -> }
     alert.show()
   }
 

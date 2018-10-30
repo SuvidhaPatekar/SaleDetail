@@ -1,12 +1,11 @@
 package itemsale.suvidha.com.itemsale.features.newsale
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.jakewharton.rxbinding.widget.RxTextView
 import itemsale.suvidha.com.itemsale.R
 import itemsale.suvidha.com.itemsale.convertToString
 import itemsale.suvidha.com.itemsale.features.newsale.AddItemFragment.AddItemDoneClickListener
@@ -64,32 +63,14 @@ class NewSaleActivity : AppCompatActivity(), AddItemDoneClickListener {
     rvItems.isNestedScrollingEnabled = false
     rvItems.adapter = saleDetailAdapter
 
-    etAmount.addTextChangedListener(object : TextWatcher {
-      override fun afterTextChanged(text: Editable?) {
-        if (!text.isNullOrEmpty()) {
-          newSaleViewModel.checkPaidAmount(text.toString().toDouble())
-        } else {
-          newSaleViewModel.checkPaidAmount(0.0)
+    RxTextView.textChanges(etAmount)
+        .subscribe { text ->
+          if (!text.isNullOrEmpty()) {
+            newSaleViewModel.checkPaidAmount(text.toString().toDouble())
+          } else {
+            newSaleViewModel.checkPaidAmount(0.0)
+          }
         }
-      }
-
-      override fun beforeTextChanged(
-        p0: CharSequence?,
-        p1: Int,
-        p2: Int,
-        p3: Int
-      ) {
-      }
-
-      override fun onTextChanged(
-        p0: CharSequence?,
-        p1: Int,
-        p2: Int,
-        p3: Int
-      ) {
-      }
-
-    })
 
     val date = getCurrentDateTime()
     val dateString = date.convertToString()

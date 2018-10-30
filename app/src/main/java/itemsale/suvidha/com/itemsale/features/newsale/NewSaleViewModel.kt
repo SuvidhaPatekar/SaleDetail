@@ -70,6 +70,7 @@ class NewSaleViewModel(
     val isPaid: Boolean
     val isGreaterAmount: Boolean
     when {
+
       amount == getCurrentViewState().subTotal -> {
         isGreaterAmount = false
         isPaid = true

@@ -1,9 +1,9 @@
 package itemsale.suvidha.com.itemsale.features
 
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
-import android.view.ViewGroup
 
 class ViewPagerAdapter(fragmentManager: FragmentManager) : FragmentStatePagerAdapter(
     fragmentManager
@@ -25,10 +25,6 @@ class ViewPagerAdapter(fragmentManager: FragmentManager) : FragmentStatePagerAda
       return "PAID"
     }
     return "PAID"
-  }
-
-  fun getFragment(position: Int): Fragment? {
-    return actualFragmentsInPager[position]
   }
 
   override fun instantiateItem(

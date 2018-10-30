@@ -2,8 +2,6 @@ package itemsale.suvidha.com.itemsale.features.newsale
 
 import android.content.Context
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.jakewharton.rxbinding.widget.RxTextView
 import itemsale.suvidha.com.itemsale.R
 import itemsale.suvidha.com.itemsale.features.newsale.AddItemViewModel.ErrorViewState
 import itemsale.suvidha.com.itemsale.features.newsale.AddItemViewModel.ViewState
@@ -45,93 +44,6 @@ class AddItemFragment : DialogFragment() {
     btnDone.setOnClickListener {
       viewModel.addItem(itemName = itemName)
     }
-    etItemQuantity.addTextChangedListener(
-        object : TextWatcher {
-          override fun afterTextChanged(quantity: Editable?) {
-
-            if (quantity.isNullOrEmpty()) {
-              viewModel.addQuantity(0)
-            } else {
-              viewModel.addQuantity(
-                  quantity.toString()
-                      .toLong()
-              )
-            }
-          }
-
-          override fun beforeTextChanged(
-            p0: CharSequence?,
-            p1: Int,
-            p2: Int,
-            p3: Int
-          ) {
-
-          }
-
-          override fun onTextChanged(
-            p0: CharSequence?,
-            p1: Int,
-            p2: Int,
-            p3: Int
-          ) {
-
-          }
-        })
-
-    etItemPrice.addTextChangedListener(
-        object : TextWatcher {
-          override fun afterTextChanged(price: Editable?) {
-            if (price.isNullOrEmpty()) {
-              viewModel.addPrice(0.0)
-            } else {
-              viewModel.addPrice(
-                  price.toString().toDouble()
-              )
-            }
-          }
-
-          override fun beforeTextChanged(
-            p0: CharSequence?,
-            p1: Int,
-            p2: Int,
-            p3: Int
-          ) {
-          }
-
-          override fun onTextChanged(
-            p0: CharSequence?,
-            p1: Int,
-            p2: Int,
-            p3: Int
-          ) {
-          }
-        })
-
-    etItemName.addTextChangedListener(
-        object : TextWatcher {
-          override fun afterTextChanged(itemNameEt: Editable?) {
-            if (!itemNameEt.isNullOrEmpty()) {
-              itemName = itemNameEt.toString()
-            }
-          }
-
-          override fun beforeTextChanged(
-            p0: CharSequence?,
-            p1: Int,
-            p2: Int,
-            p3: Int
-          ) {
-          }
-
-          override fun onTextChanged(
-            p0: CharSequence?,
-            p1: Int,
-            p2: Int,
-            p3: Int
-          ) {
-          }
-
-        })
   }
 
   override fun onAttach(context: Context?) {
@@ -168,6 +80,37 @@ class AddItemFragment : DialogFragment() {
         handleErrorViewState(it)
       }
     })
+
+    RxTextView.textChanges(etItemQuantity)
+        .subscribe { quantity ->
+          if (quantity.isNullOrEmpty()) {
+            viewModel.addQuantity(0)
+          } else {
+            viewModel.addQuantity(
+                quantity.toString()
+                    .toLong()
+            )
+          }
+        }
+
+    RxTextView.textChanges(etItemPrice)
+        .subscribe { price ->
+          if (price.isNullOrEmpty()) {
+            viewModel.addPrice(0.0)
+          } else {
+            viewModel.addPrice(
+                price.toString().toDouble()
+            )
+          }
+        }
+
+    RxTextView.textChanges(etItemName)
+        .subscribe { itemNameEt ->
+          if (!itemNameEt.isNullOrEmpty()) {
+            itemName = itemNameEt.toString()
+          }
+        }
+
   }
 
   private fun handleErrorViewState(errorViewState: ErrorViewState) {
