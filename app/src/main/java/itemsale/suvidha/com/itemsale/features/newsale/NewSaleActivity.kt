@@ -10,12 +10,13 @@ import androidx.lifecycle.ViewModelProviders
 import itemsale.suvidha.com.itemsale.R
 import itemsale.suvidha.com.itemsale.convertToString
 import itemsale.suvidha.com.itemsale.features.newsale.AddItemFragment.AddItemDoneClickListener
+import itemsale.suvidha.com.itemsale.features.newsale.NewSaleViewModel.ErrorViewState
 import itemsale.suvidha.com.itemsale.features.salesdetails.SaleDetailAdapter
 import itemsale.suvidha.com.itemsale.getCurrentDateTime
 import itemsale.suvidha.com.itemsale.model.SaleDatabase
 import itemsale.suvidha.com.itemsale.model.entity.Item
-import kotlinx.android.synthetic.main.activity_new_sale.fab
 import kotlinx.android.synthetic.main.activity_new_sale.toolbar
+import kotlinx.android.synthetic.main.content_new_sale.btnAdd
 import kotlinx.android.synthetic.main.content_new_sale.btnDone
 import kotlinx.android.synthetic.main.content_new_sale.checkbox
 import kotlinx.android.synthetic.main.content_new_sale.etAmount
@@ -49,7 +50,10 @@ class NewSaleActivity : AppCompatActivity(), AddItemDoneClickListener {
       handleViewState(viewState)
     })
 
-    fab.setOnClickListener {
+    newSaleViewModel.errorViewState.observe(this, Observer { viewState ->
+      handleErrorViewState(viewState)
+    })
+    btnAdd.setOnClickListener {
       val newFragment =
         AddItemFragment.newInstance()
       newFragment.show(supportFragmentManager, "ITEM DETAILS")
@@ -98,36 +102,26 @@ class NewSaleActivity : AppCompatActivity(), AddItemDoneClickListener {
     }
   }
 
+  private fun handleErrorViewState(errorViewState: ErrorViewState?) {
+    errorViewState?.let {
+      if (it.error > 0) {
+        showToast(it.error)
+      }
+    }
+  }
+
   private fun handleViewState(viewState: NewSaleViewModel.ViewState?) {
     viewState?.let {
+
+      if (it.isDone) {
+        finish()
+        return
+      }
+
       saleDetailAdapter.setItems(it.items)
       tvSubtotalAmount.text = it.subTotal.toString()
       tvTotalQuantity.text = it.totalQuantity.toString()
       checkbox.isChecked = it.isPaid
-
-      if (it.isGreaterAmount) {
-        showToast(R.string.err_greater_amount)
-      }
-
-      if (it.isNullCustomerName) {
-        showToast(R.string.err_name)
-      }
-
-      if (it.isNullAmount) {
-        showToast(R.string.err_amount)
-      }
-
-      if (it.isNullDate) {
-        showToast(R.string.err_date)
-      }
-
-      if (it.emptyItems) {
-        showToast(R.string.err_items)
-      }
-
-      if (it.isDone) {
-        finish()
-      }
     }
   }
 

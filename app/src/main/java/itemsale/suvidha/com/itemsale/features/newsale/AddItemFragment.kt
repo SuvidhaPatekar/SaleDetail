@@ -171,16 +171,8 @@ class AddItemFragment : DialogFragment() {
   }
 
   private fun handleErrorViewState(errorViewState: ErrorViewState) {
-    if (errorViewState.isNullName) {
-      showToast(R.string.enter_item_name)
-    }
-
-    if (errorViewState.isQuantityAdded) {
-      showToast(R.string.enter_item_quantity)
-    }
-
-    if (errorViewState.isPriceAdded) {
-      showToast(R.string.enter_item_rate)
+    if (errorViewState.error != -1) {
+      showToast(errorViewState.error)
     }
   }
 

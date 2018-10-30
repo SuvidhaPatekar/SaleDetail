@@ -1,6 +1,7 @@
 package itemsale.suvidha.com.itemsale.features.newsale
 
 import androidx.lifecycle.MutableLiveData
+import itemsale.suvidha.com.itemsale.R
 import itemsale.suvidha.com.itemsale.features.base.BaseViewModel
 import itemsale.suvidha.com.itemsale.round2Decimal
 
@@ -20,21 +21,18 @@ class AddItemViewModel : BaseViewModel() {
   )
 
   data class ErrorViewState(
-    val isNullName: Boolean,
-    val isQuantityAdded: Boolean,
-    val isPriceAdded: Boolean
+    val error: Int
   )
 
   init {
     viewState.value = ViewState(
         0, 0.0, 0.0, 0.0, 0.0, null, false
     )
-    errorViewState.value = ErrorViewState(false, false, false)
+    errorViewState.value = ErrorViewState(-1)
 
   }
 
   private fun getCurrentViewState() = viewState.value!!
-  private fun getCurrentErrorViewState() = errorViewState.value!!
 
   fun addQuantity(quantity: Long) {
     calculateTotal(quantity, getCurrentViewState().itemPrice)
@@ -63,30 +61,20 @@ class AddItemViewModel : BaseViewModel() {
 
   fun addItem(itemName: String?) {
     if (itemName.isNullOrEmpty()) {
-      errorViewState.value = getCurrentErrorViewState().copy(
-          isNullName = true, isQuantityAdded = false, isPriceAdded = false
-      )
+      errorViewState.value = ErrorViewState(R.string.enter_item_name)
       return
     }
 
     if (getCurrentViewState().itemQuantity == 0L) {
-      errorViewState.value = getCurrentErrorViewState().copy(
-          isNullName = false, isQuantityAdded = true, isPriceAdded = false
-      )
+      errorViewState.value = ErrorViewState(R.string.enter_item_quantity)
       return
     }
 
     if (getCurrentViewState().itemPrice == 0.0) {
-      errorViewState.value = getCurrentErrorViewState().copy(
-          isNullName = false, isQuantityAdded = false, isPriceAdded = true
-      )
+      errorViewState.value = ErrorViewState(R.string.enter_item_rate)
       return
     }
-
-
-    errorViewState.value = getCurrentErrorViewState().copy(
-        isNullName = false, isQuantityAdded = false, isPriceAdded = false
-    )
+    errorViewState.value = ErrorViewState(-1)
 
     viewState.value = getCurrentViewState().copy(itemAdded = true)
   }

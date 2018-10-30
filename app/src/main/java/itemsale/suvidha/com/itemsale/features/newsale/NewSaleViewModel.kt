@@ -5,6 +5,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiConsumer
 import io.reactivex.schedulers.Schedulers
+import itemsale.suvidha.com.itemsale.R
 import itemsale.suvidha.com.itemsale.features.base.BaseViewModel
 import itemsale.suvidha.com.itemsale.model.dao.ItemDao
 import itemsale.suvidha.com.itemsale.model.dao.SaleDao
@@ -18,6 +19,8 @@ class NewSaleViewModel(
 ) : BaseViewModel() {
 
   val viewState: MutableLiveData<ViewState> = MutableLiveData()
+  val errorViewState: MutableLiveData<ErrorViewState> = MutableLiveData()
+
   private lateinit var sale: Sale
 
   data class ViewState(
@@ -26,17 +29,20 @@ class NewSaleViewModel(
     val totalQuantity: Long,
     val subTotal: Double,
     val isDone: Boolean,
-    val isGreaterAmount: Boolean,
-    val isNullCustomerName: Boolean,
-    val isNullDate: Boolean,
-    val isNullAmount: Boolean,
-    val paidAmount: Double,
-    val emptyItems: Boolean
+    val paidAmount: Double
+  )
+
+  data class ErrorViewState(
+    val error: Int
   )
 
   init {
     viewState.value = ViewState(
-        emptyList(), false, 0, 0.0, false, false, false, false, false, 0.0, false
+        emptyList(), false, 0, 0.0, false, 0.0
+    )
+
+    errorViewState.value = ErrorViewState(
+        -1
     )
   }
 
@@ -53,14 +59,9 @@ class NewSaleViewModel(
     var subTotal = currentViewState.subTotal
     subTotal = (subTotal + item.totalPrice).round2Decimal()
 
-    viewState.value =
-        (ViewState(
-            currentItems, getCurrentViewState().isPaid, currentQuantity, subTotal,
-            getCurrentViewState().isDone, getCurrentViewState().isGreaterAmount,
-            false, false,
-            false, getCurrentViewState().paidAmount,
-            false
-        ))
+    viewState.value = getCurrentViewState().copy(
+        items = currentItems, totalQuantity = currentQuantity, subTotal = subTotal
+    )
 
     checkPaidAmount(getCurrentViewState().paidAmount)
   }
@@ -83,14 +84,10 @@ class NewSaleViewModel(
       }
     }
 
-    viewState.value =
-        (ViewState(
-            getCurrentViewState().items, isPaid,
-            getCurrentViewState().totalQuantity, getCurrentViewState().subTotal,
-            getCurrentViewState().isDone, isGreaterAmount, getCurrentViewState().isNullCustomerName,
-            getCurrentViewState().isNullDate,
-            getCurrentViewState().isNullAmount, amount, getCurrentViewState().emptyItems
-        ))
+    viewState.value = getCurrentViewState().copy(isPaid = isPaid, paidAmount = amount)
+    if (isGreaterAmount) {
+      errorViewState.value = ErrorViewState(R.string.err_greater_amount)
+    }
   }
 
   fun addSale(
@@ -100,41 +97,30 @@ class NewSaleViewModel(
   ) {
     val state = getCurrentViewState()
     if (customerName.isNullOrEmpty()) {
-      viewState.value = ViewState(
-          state.items, state.isPaid, state.totalQuantity, state.subTotal, state.isDone,
-          state.isGreaterAmount, true, state.isNullDate, state.isNullAmount, state.paidAmount,
-          false
-      )
+      errorViewState.value = ErrorViewState(R.string.err_name)
       return
     }
 
     if (date.isNullOrEmpty()) {
-      viewState.value = ViewState(
-          state.items, state.isPaid, state.totalQuantity, state.subTotal, state.isDone,
-          state.isGreaterAmount, false, true, false, state.paidAmount, false
-      )
+      errorViewState.value = ErrorViewState(R.string.err_date)
       return
     }
 
 
     if (getCurrentViewState().items.isEmpty()) {
-      viewState.value = ViewState(
-          state.items, state.isPaid, state.totalQuantity, state.subTotal, state.isDone,
-          state.isGreaterAmount, false, false, false, state.paidAmount, true
-      )
+      errorViewState.value = ErrorViewState(R.string.err_items)
       return
     }
 
 
     if (paidAmount.isNullOrEmpty()) {
-      viewState.value = ViewState(
-          state.items, state.isPaid, state.totalQuantity, state.subTotal, state.isDone,
-          state.isGreaterAmount, false, false, true, state.paidAmount, false
-      )
+      errorViewState.value = ErrorViewState(R.string.err_amount)
       return
     }
+
     val balanceAmount =
       (getCurrentViewState().subTotal - getCurrentViewState().paidAmount).round2Decimal()
+
     sale = Sale(
         customerName = customerName!!, date = date!!, isPaid = state.isPaid,
         paidAmount = paidAmount!!.toDouble(),
@@ -169,14 +155,14 @@ class NewSaleViewModel(
           return@fromCallable itemDao.addItems(itemsTobeInserted)
         }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(BiConsumer { id, throwable ->
+            .subscribe(BiConsumer { _, throwable ->
               if (throwable != null) {
-                //todo show toast
                 return@BiConsumer
               }
             })
     )
-    viewState.value =
-        ViewState(emptyList(), false, 0, 0.0, true, false, false, false, false, 0.0, false)
+    viewState.value = getCurrentViewState().copy(isDone = true)
+    errorViewState.value = ErrorViewState(-1)
+
   }
 }

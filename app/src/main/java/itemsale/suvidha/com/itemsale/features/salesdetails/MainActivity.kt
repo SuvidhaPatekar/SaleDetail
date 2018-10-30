@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
     adapter.addFragment(SaleDetailFragment.newInstance(1))
     adapter.notifyDataSetChanged()
 
-    fab.setOnClickListener { view ->
+    fab.setOnClickListener {
       val intent = Intent(this, NewSaleActivity::class.java)
       startActivity(intent)
     }

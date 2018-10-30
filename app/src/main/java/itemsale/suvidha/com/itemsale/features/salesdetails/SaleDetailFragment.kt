@@ -130,7 +130,7 @@ class SaleDetailFragment : Fragment(), Listener {
     alert.show()
   }
 
-  fun showToast() {
+  private fun showToast() {
     Toast.makeText(activity, R.string.err_balance_amount, Toast.LENGTH_SHORT)
         .show()
   }

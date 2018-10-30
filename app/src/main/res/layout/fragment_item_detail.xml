@@ -21,42 +21,60 @@
       app:layout_constraintRight_toRightOf="parent"
       app:layout_constraintTop_toTopOf="parent"
       />
-
-  <EditText
-      android:id="@+id/etItemName"
+  <com.google.android.material.textfield.TextInputLayout
+      android:id="@+id/tilItemAName"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_margin="4dp"
-      android:hint="@string/enter_item_name"
-      android:inputType="text"
       app:layout_constraintLeft_toLeftOf="parent"
       app:layout_constraintRight_toRightOf="parent"
       app:layout_constraintTop_toBottomOf="@id/tvTitle"
-      />
+      >
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etItemName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/enter_item_name"
+        android:inputType="text"
+        />
+  </com.google.android.material.textfield.TextInputLayout>
 
-  <EditText
-      android:id="@+id/etItemQuantity"
+
+  <com.google.android.material.textfield.TextInputLayout
+      android:id="@+id/tilItemQuantity"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_margin="4dp"
-      android:hint="@string/enter_item_quantity"
-      android:inputType="number"
       app:layout_constraintLeft_toLeftOf="parent"
       app:layout_constraintRight_toRightOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/etItemName"
-      />
+      app:layout_constraintTop_toBottomOf="@id/tilItemAName"
+      >
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etItemQuantity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/enter_item_quantity"
+        android:inputType="number"
+        />
+  </com.google.android.material.textfield.TextInputLayout>
 
-  <EditText
-      android:id="@+id/etItemPrice"
+  <com.google.android.material.textfield.TextInputLayout
+      android:id="@+id/tilItemPrice"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_margin="4dp"
-      android:hint="@string/enter_item_rate"
-      android:inputType="numberDecimal"
       app:layout_constraintLeft_toLeftOf="parent"
       app:layout_constraintRight_toRightOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/etItemQuantity"
-      />
+      app:layout_constraintTop_toBottomOf="@id/tilItemQuantity"
+      >
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etItemPrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/enter_item_rate"
+        android:inputType="numberDecimal"
+        />
+  </com.google.android.material.textfield.TextInputLayout>
 
   <TextView
       android:id="@+id/tvsgst"
@@ -65,7 +83,7 @@
       android:layout_margin="4dp"
       android:text="@string/sgst_9"
       app:layout_constraintLeft_toLeftOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/etItemPrice"
+      app:layout_constraintTop_toBottomOf="@id/tilItemPrice"
       />
 
   <TextView
@@ -74,7 +92,7 @@
       android:layout_height="wrap_content"
       android:layout_margin="8dp"
       app:layout_constraintRight_toRightOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/etItemPrice"
+      app:layout_constraintTop_toBottomOf="@id/tilItemPrice"
       tools:text="123"
       />
 
