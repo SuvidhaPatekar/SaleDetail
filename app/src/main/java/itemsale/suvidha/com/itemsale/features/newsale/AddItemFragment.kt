@@ -12,6 +12,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import itemsale.suvidha.com.itemsale.R
+import itemsale.suvidha.com.itemsale.features.newsale.AddItemViewModel.ErrorViewState
 import itemsale.suvidha.com.itemsale.features.newsale.AddItemViewModel.ViewState
 import itemsale.suvidha.com.itemsale.model.entity.Item
 import kotlinx.android.synthetic.main.fragment_item_detail.btnDone
@@ -53,7 +54,7 @@ class AddItemFragment : DialogFragment() {
             } else {
               viewModel.addQuantity(
                   quantity.toString()
-                      .toInt()
+                      .toLong()
               )
             }
           }
@@ -161,24 +162,32 @@ class AddItemFragment : DialogFragment() {
         handleViewState(it)
       }
     })
+
+    viewModel.errorViewState.observe(this, Observer { viewState ->
+      viewState?.let {
+        handleErrorViewState(it)
+      }
+    })
+  }
+
+  private fun handleErrorViewState(errorViewState: ErrorViewState) {
+    if (errorViewState.isNullName) {
+      showToast(R.string.enter_item_name)
+    }
+
+    if (errorViewState.isQuantityAdded) {
+      showToast(R.string.enter_item_quantity)
+    }
+
+    if (errorViewState.isPriceAdded) {
+      showToast(R.string.enter_item_rate)
+    }
   }
 
   private fun handleViewState(viewState: ViewState) {
     tvIgst.text = viewState.tax.toString()
     tvSgst.text = viewState.tax.toString()
     tvTotal.text = viewState.totalPrice.toString()
-
-    if (viewState.isNullName) {
-      showToast(R.string.enter_item_name)
-    }
-
-    if (viewState.isQuantityAdded) {
-      showToast(R.string.enter_item_quantity)
-    }
-
-    if (viewState.isPriceAdded) {
-      showToast(R.string.enter_item_rate)
-    }
 
     if (viewState.itemAdded) {
       listener.onDoneClick(

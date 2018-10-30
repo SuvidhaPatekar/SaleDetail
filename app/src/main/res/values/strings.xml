@@ -26,4 +26,6 @@
   <string name="qty">Qty</string>
   <string name="rate">Rate</string>
   <string name="total_amount">Total Amount</string>
+  <string name="delete">DELETE</string>
+  <string name="pay">PAY</string>
 </resources>

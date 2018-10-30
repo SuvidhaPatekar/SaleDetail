@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import itemsale.suvidha.com.itemsale.R
@@ -65,7 +66,7 @@ class SaleAdapter : RecyclerView.Adapter<SaleViewHolder>() {
     private val tvTotalAmount: TextView = itemView.tvTotalAmount
     private val tvBalanceAmount: TextView = itemView.tvBalanceAmount
     private val btnPay: Button = itemView.btnPay
-    private val btnDelete: Button = itemView.btnDelete
+    private val btnDelete: ImageButton = itemView.btnDelete
 
     fun bindTo(sale: Sale) {
       tvName.text = sale.customerName

@@ -23,7 +23,7 @@ class NewSaleViewModel(
   data class ViewState(
     val items: List<Item>,
     val isPaid: Boolean,
-    val totalQuantity: Int,
+    val totalQuantity: Long,
     val subTotal: Double,
     val isDone: Boolean,
     val isGreaterAmount: Boolean,

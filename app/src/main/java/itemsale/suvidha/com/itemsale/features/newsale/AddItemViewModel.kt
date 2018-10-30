@@ -7,27 +7,36 @@ import itemsale.suvidha.com.itemsale.round2Decimal
 class AddItemViewModel : BaseViewModel() {
 
   val viewState: MutableLiveData<ViewState> = MutableLiveData()
+  val errorViewState: MutableLiveData<ErrorViewState> = MutableLiveData()
 
   data class ViewState(
-    val itemQuantity: Int,
+    val itemQuantity: Long,
     val itemPrice: Double,
     val totalPrice: Double,
     val tax: Double,
     val amount: Double,
     val itemName: String?,
-    val itemAdded: Boolean,
+    val itemAdded: Boolean
+  )
+
+  data class ErrorViewState(
     val isNullName: Boolean,
     val isQuantityAdded: Boolean,
     val isPriceAdded: Boolean
   )
 
   init {
-    viewState.value = ViewState(0, 0.0, 0.0, 0.0, 0.0, null, false, false, false, false)
+    viewState.value = ViewState(
+        0, 0.0, 0.0, 0.0, 0.0, null, false
+    )
+    errorViewState.value = ErrorViewState(false, false, false)
+
   }
 
   private fun getCurrentViewState() = viewState.value!!
+  private fun getCurrentErrorViewState() = errorViewState.value!!
 
-  fun addQuantity(quantity: Int) {
+  fun addQuantity(quantity: Long) {
     calculateTotal(quantity, getCurrentViewState().itemPrice)
   }
 
@@ -36,7 +45,7 @@ class AddItemViewModel : BaseViewModel() {
   }
 
   private fun calculateTotal(
-    quantity: Int,
+    quantity: Long,
     price: Double
   ) {
     val amount =
@@ -44,42 +53,41 @@ class AddItemViewModel : BaseViewModel() {
     val tax = (amount * 0.09).round2Decimal()
     val totalPrice = (amount + tax + tax).round2Decimal()
 
-    viewState.value = ViewState(
-        quantity, price,
-        totalPrice,
-        tax, getCurrentViewState().amount, getCurrentViewState().itemName,
-        getCurrentViewState().itemAdded, false, false, false
+
+    viewState.value = getCurrentViewState().copy(
+        itemQuantity = quantity, itemPrice = price,
+        totalPrice = totalPrice,
+        tax = tax
     )
   }
 
   fun addItem(itemName: String?) {
     if (itemName.isNullOrEmpty()) {
-      viewState.value = getCurrentViewState().copy(
+      errorViewState.value = getCurrentErrorViewState().copy(
           isNullName = true, isQuantityAdded = false, isPriceAdded = false
       )
       return
     }
 
-    if (getCurrentViewState().itemQuantity == 0) {
-      viewState.value = getCurrentViewState().copy(
+    if (getCurrentViewState().itemQuantity == 0L) {
+      errorViewState.value = getCurrentErrorViewState().copy(
           isNullName = false, isQuantityAdded = true, isPriceAdded = false
       )
       return
     }
 
     if (getCurrentViewState().itemPrice == 0.0) {
-      viewState.value = getCurrentViewState().copy(
+      errorViewState.value = getCurrentErrorViewState().copy(
           isNullName = false, isQuantityAdded = false, isPriceAdded = true
       )
       return
     }
 
-    viewState.value = ViewState(
-        getCurrentViewState().itemQuantity, getCurrentViewState().itemPrice,
-        getCurrentViewState().totalPrice,
-        getCurrentViewState().tax, getCurrentViewState().amount, getCurrentViewState().itemName,
-        true, false, false, false
+
+    errorViewState.value = getCurrentErrorViewState().copy(
+        isNullName = false, isQuantityAdded = false, isPriceAdded = false
     )
 
+    viewState.value = getCurrentViewState().copy(itemAdded = true)
   }
 }
