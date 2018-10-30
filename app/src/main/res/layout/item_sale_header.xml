@@ -2,7 +2,6 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="3dp"
@@ -12,8 +11,8 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_margin="4dp"
-      android:paddingBottom="12dp"
-      android:paddingTop="12dp"
+      android:paddingBottom="8dp"
+      android:paddingTop="8dp"
       >
 
     <TextView
@@ -22,25 +21,27 @@
         android:layout_height="wrap_content"
         android:paddingEnd="4dp"
         android:paddingStart="4dp"
+        android:text="@string/id"
+        android:textColor="@color/black_alpha_87"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.1"
-        tools:text="1"
         />
 
     <TextView
         android:id="@+id/tvItemName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:paddingEnd="4dp"
-        android:paddingStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:text="@string/item_name"
+        android:textColor="@color/black_alpha_87"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_weight="35"
         app:layout_constraintLeft_toRightOf="@id/tvId"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.35"
-        tools:text="itehj  jdsvdlsvs"
         />
 
     <TextView
@@ -49,12 +50,13 @@
         android:layout_height="wrap_content"
         android:paddingEnd="4dp"
         android:paddingStart="4dp"
+        android:text="@string/qty"
+        android:textColor="@color/black_alpha_87"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_weight="15"
         app:layout_constraintLeft_toRightOf="@id/tvItemName"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.15"
-        tools:text="123456"
         />
 
     <TextView
@@ -63,12 +65,13 @@
         android:layout_height="wrap_content"
         android:paddingEnd="4dp"
         android:paddingStart="4dp"
+        android:text="@string/rate"
+        android:textColor="@color/black_alpha_87"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_weight="20"
         app:layout_constraintLeft_toRightOf="@id/tvQuantity"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.2"
-        tools:text="w4"
         />
 
     <TextView
@@ -79,11 +82,12 @@
         android:layout_marginRight="4dp"
         android:paddingEnd="4dp"
         android:paddingStart="4dp"
+        android:text="@string/total_amount"
+        android:textColor="@color/black_alpha_87"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/tvRate"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.2"
-        tools:text="1000"
         />
   </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

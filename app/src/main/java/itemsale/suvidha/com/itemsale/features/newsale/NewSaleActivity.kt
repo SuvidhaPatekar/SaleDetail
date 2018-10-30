@@ -9,7 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import itemsale.suvidha.com.itemsale.R
 import itemsale.suvidha.com.itemsale.convertToString
-import itemsale.suvidha.com.itemsale.features.newsale.AddItemFragment.OnClickListener
+import itemsale.suvidha.com.itemsale.features.newsale.AddItemFragment.AddItemDoneClickListener
 import itemsale.suvidha.com.itemsale.features.salesdetails.SaleDetailAdapter
 import itemsale.suvidha.com.itemsale.getCurrentDateTime
 import itemsale.suvidha.com.itemsale.model.SaleDatabase
@@ -25,7 +25,7 @@ import kotlinx.android.synthetic.main.content_new_sale.tvDate
 import kotlinx.android.synthetic.main.item_subtotal.tvSubtotalAmount
 import kotlinx.android.synthetic.main.item_subtotal.tvTotalQuantity
 
-class NewSaleActivity : AppCompatActivity(), OnClickListener {
+class NewSaleActivity : AppCompatActivity(), AddItemDoneClickListener {
 
   private lateinit var saleDetailAdapter: SaleDetailAdapter
   private lateinit var items: ArrayList<Item>
@@ -136,7 +136,7 @@ class NewSaleActivity : AppCompatActivity(), OnClickListener {
         .show()
   }
 
-  override fun onItemAdded(item: Item) {
+  override fun onDoneClick(item: Item) {
     newSaleViewModel.addItem(item)
   }
 }

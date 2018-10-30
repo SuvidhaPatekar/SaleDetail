@@ -12,9 +12,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import itemsale.suvidha.com.itemsale.R
-import itemsale.suvidha.com.itemsale.R.layout
 import itemsale.suvidha.com.itemsale.features.newsale.AddItemViewModel.ViewState
-import itemsale.suvidha.com.itemsale.model.SaleDatabase
 import itemsale.suvidha.com.itemsale.model.entity.Item
 import kotlinx.android.synthetic.main.fragment_item_detail.btnDone
 import kotlinx.android.synthetic.main.fragment_item_detail.etItemName
@@ -25,18 +23,17 @@ import kotlinx.android.synthetic.main.fragment_item_detail.tvSgst
 import kotlinx.android.synthetic.main.fragment_item_detail.tvTotal
 
 class AddItemFragment : DialogFragment() {
-  private lateinit var listener: OnClickListener
+  private lateinit var listener: AddItemDoneClickListener
   private var itemName: String? = null
 
   private lateinit var viewModel: AddItemViewModel
-  private lateinit var viewModelFactory: AddItemViewModelFactory
 
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    return inflater.inflate(layout.fragment_item_detail, container, false)
+    return inflater.inflate(R.layout.fragment_item_detail, container, false)
   }
 
   override fun onViewCreated(
@@ -138,7 +135,7 @@ class AddItemFragment : DialogFragment() {
 
   override fun onAttach(context: Context?) {
     super.onAttach(context)
-    if (context is OnClickListener) {
+    if (context is AddItemDoneClickListener) {
       listener = context
     }
   }
@@ -155,46 +152,43 @@ class AddItemFragment : DialogFragment() {
 
   override fun onActivityCreated(savedInstanceState: Bundle?) {
     super.onActivityCreated(savedInstanceState)
-    viewModelFactory = AddItemViewModelFactory(
-        SaleDatabase.getInstance(activity!!).itemDao()
-    )
 
-    viewModel = ViewModelProviders.of(this, viewModelFactory)
+    viewModel = ViewModelProviders.of(this)
         .get(AddItemViewModel::class.java)
 
     viewModel.viewState.observe(this, Observer { viewState ->
-      handleViewState(viewState)
+      viewState?.let {
+        handleViewState(it)
+      }
     })
   }
 
-  private fun handleViewState(viewState: ViewState?) {
-    viewState?.let {
-      tvIgst.text = it.tax.toString()
-      tvSgst.text = it.tax.toString()
-      tvTotal.text = it.totalPrice.toString()
+  private fun handleViewState(viewState: ViewState) {
+    tvIgst.text = viewState.tax.toString()
+    tvSgst.text = viewState.tax.toString()
+    tvTotal.text = viewState.totalPrice.toString()
 
-      if (it.isNullName) {
-        showToast(R.string.enter_item_name)
-      }
+    if (viewState.isNullName) {
+      showToast(R.string.enter_item_name)
+    }
 
-      if (it.isQuantityAdded) {
-        showToast(R.string.enter_item_quantity)
-      }
+    if (viewState.isQuantityAdded) {
+      showToast(R.string.enter_item_quantity)
+    }
 
-      if (it.isPriceAdded) {
-        showToast(R.string.enter_item_rate)
-      }
+    if (viewState.isPriceAdded) {
+      showToast(R.string.enter_item_rate)
+    }
 
-      if (it.itemAdded) {
-        listener.onItemAdded(
-            Item(
-                itemName = itemName!!, quantity = it.itemQuantity, price = it.itemPrice,
-                sgst = it.tax,
-                igst = it.tax, totalPrice = it.totalPrice, saleId = -1
-            )
-        )
-        dismiss()
-      }
+    if (viewState.itemAdded) {
+      listener.onDoneClick(
+          Item(
+              itemName = itemName!!, quantity = viewState.itemQuantity, price = viewState.itemPrice,
+              sgst = viewState.tax,
+              igst = viewState.tax, totalPrice = viewState.totalPrice, saleId = -1
+          )
+      )
+      dismiss()
     }
   }
 
@@ -207,7 +201,7 @@ class AddItemFragment : DialogFragment() {
         .show()
   }
 
-  interface OnClickListener {
-    fun onItemAdded(item: Item)
+  interface AddItemDoneClickListener {
+    fun onDoneClick(item: Item)
   }
 }

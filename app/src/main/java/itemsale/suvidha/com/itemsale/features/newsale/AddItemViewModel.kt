@@ -2,10 +2,9 @@ package itemsale.suvidha.com.itemsale.features.newsale
 
 import androidx.lifecycle.MutableLiveData
 import itemsale.suvidha.com.itemsale.features.base.BaseViewModel
-import itemsale.suvidha.com.itemsale.model.dao.ItemDao
 import itemsale.suvidha.com.itemsale.round2Decimal
 
-class AddItemViewModel(private val itemDao: ItemDao) : BaseViewModel() {
+class AddItemViewModel : BaseViewModel() {
 
   val viewState: MutableLiveData<ViewState> = MutableLiveData()
 
@@ -26,7 +25,7 @@ class AddItemViewModel(private val itemDao: ItemDao) : BaseViewModel() {
     viewState.value = ViewState(0, 0.0, 0.0, 0.0, 0.0, null, false, false, false, false)
   }
 
-  fun getCurrentViewState() = viewState.value!!
+  private fun getCurrentViewState() = viewState.value!!
 
   fun addQuantity(quantity: Int) {
     calculateTotal(quantity, getCurrentViewState().itemPrice)
@@ -55,31 +54,22 @@ class AddItemViewModel(private val itemDao: ItemDao) : BaseViewModel() {
 
   fun addItem(itemName: String?) {
     if (itemName.isNullOrEmpty()) {
-      viewState.value = ViewState(
-          getCurrentViewState().itemQuantity, getCurrentViewState().itemPrice,
-          getCurrentViewState().totalPrice,
-          getCurrentViewState().tax, getCurrentViewState().amount, getCurrentViewState().itemName,
-          getCurrentViewState().itemAdded, true, false, false
+      viewState.value = getCurrentViewState().copy(
+          isNullName = true, isQuantityAdded = false, isPriceAdded = false
       )
       return
     }
 
     if (getCurrentViewState().itemQuantity == 0) {
-      viewState.value = ViewState(
-          getCurrentViewState().itemQuantity, getCurrentViewState().itemPrice,
-          getCurrentViewState().totalPrice,
-          getCurrentViewState().tax, getCurrentViewState().amount, getCurrentViewState().itemName,
-          getCurrentViewState().itemAdded, false, true, false
+      viewState.value = getCurrentViewState().copy(
+          isNullName = false, isQuantityAdded = true, isPriceAdded = false
       )
       return
     }
 
     if (getCurrentViewState().itemPrice == 0.0) {
-      viewState.value = ViewState(
-          getCurrentViewState().itemQuantity, getCurrentViewState().itemPrice,
-          getCurrentViewState().totalPrice,
-          getCurrentViewState().tax, getCurrentViewState().amount, getCurrentViewState().itemName,
-          getCurrentViewState().itemAdded, false, false, true
+      viewState.value = getCurrentViewState().copy(
+          isNullName = false, isQuantityAdded = false, isPriceAdded = true
       )
       return
     }
