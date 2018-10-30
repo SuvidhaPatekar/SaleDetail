@@ -14,157 +14,157 @@ import itemsale.suvidha.com.itemsale.model.entity.Sale
 import itemsale.suvidha.com.itemsale.round2Decimal
 
 class NewSaleViewModel(
-    private val saleDao: SaleDao,
-    private val itemDao: ItemDao
+  private val saleDao: SaleDao,
+  private val itemDao: ItemDao
 ) : BaseViewModel() {
 
-    val viewState: MutableLiveData<ViewState> = MutableLiveData()
-    val errorViewState: MutableLiveData<ErrorViewState> = MutableLiveData()
+  val viewState: MutableLiveData<ViewState> = MutableLiveData()
+  val errorViewState: MutableLiveData<ErrorViewState> = MutableLiveData()
 
-    private lateinit var sale: Sale
+  private lateinit var sale: Sale
 
-    data class ViewState(
-        val items: List<Item>,
-        val isPaid: Boolean,
-        val totalQuantity: Long,
-        val subTotal: Double,
-        val isDone: Boolean,
-        val paidAmount: Double
+  data class ViewState(
+    val items: List<Item>,
+    val isPaid: Boolean,
+    val totalQuantity: Long,
+    val subTotal: Double,
+    val isDone: Boolean,
+    val paidAmount: Double
+  )
+
+  data class ErrorViewState(
+    val error: Int
+  )
+
+  init {
+    viewState.value = ViewState(
+        emptyList(), false, 0, 0.0, false, 0.0
     )
 
-    data class ErrorViewState(
-        val error: Int
+    errorViewState.value = ErrorViewState(
+        -1
+    )
+  }
+
+  private fun getCurrentViewState() = viewState.value!!
+
+  fun addItem(item: Item) {
+    val currentViewState = getCurrentViewState()
+    val currentItems = mutableListOf<Item>()
+    currentItems.addAll(currentViewState.items)
+    currentItems.add(0, item)
+
+    var currentQuantity = currentViewState.totalQuantity
+    currentQuantity += item.quantity
+    var subTotal = currentViewState.subTotal
+    subTotal = (subTotal + item.totalPrice).round2Decimal()
+
+    viewState.value = getCurrentViewState().copy(
+        items = currentItems, totalQuantity = currentQuantity, subTotal = subTotal
     )
 
-    init {
-        viewState.value = ViewState(
-            emptyList(), false, 0, 0.0, false, 0.0
-        )
+    checkPaidAmount(getCurrentViewState().paidAmount)
+  }
 
-        errorViewState.value = ErrorViewState(
-            -1
-        )
+  fun checkPaidAmount(amount: Double) {
+    if (amount == 0.0 && getCurrentViewState().subTotal == 0.0) return
+
+    val isPaid: Boolean
+    val isGreaterAmount: Boolean
+    when {
+      amount == getCurrentViewState().subTotal -> {
+        isGreaterAmount = false
+        isPaid = true
+      }
+      amount < getCurrentViewState().subTotal -> {
+        isGreaterAmount = false
+        isPaid = false
+      }
+      else -> {
+        isPaid = false
+        isGreaterAmount = true
+      }
     }
 
-    private fun getCurrentViewState() = viewState.value!!
+    viewState.value = getCurrentViewState().copy(isPaid = isPaid, paidAmount = amount)
+    if (isGreaterAmount) {
+      errorViewState.value = ErrorViewState(R.string.err_greater_amount)
+    }
+  }
 
-    fun addItem(item: Item) {
-        val currentViewState = getCurrentViewState()
-        val currentItems = mutableListOf<Item>()
-        currentItems.addAll(currentViewState.items)
-        currentItems.add(0, item)
-
-        var currentQuantity = currentViewState.totalQuantity
-        currentQuantity += item.quantity
-        var subTotal = currentViewState.subTotal
-        subTotal = (subTotal + item.totalPrice).round2Decimal()
-
-        viewState.value = getCurrentViewState().copy(
-            items = currentItems, totalQuantity = currentQuantity, subTotal = subTotal
-        )
-
-        checkPaidAmount(getCurrentViewState().paidAmount)
+  fun addSale(
+    customerName: String?,
+    date: String?,
+    paidAmount: String?
+  ) {
+    val state = getCurrentViewState()
+    if (customerName.isNullOrEmpty()) {
+      errorViewState.value = ErrorViewState(R.string.err_name)
+      return
     }
 
-    fun checkPaidAmount(amount: Double) {
-        if (amount == 0.0 && getCurrentViewState().subTotal == 0.0) return
-
-        val isPaid: Boolean
-        val isGreaterAmount: Boolean
-        when {
-            amount == getCurrentViewState().subTotal -> {
-                isGreaterAmount = false
-                isPaid = true
-            }
-            amount < getCurrentViewState().subTotal -> {
-                isGreaterAmount = false
-                isPaid = false
-            }
-            else -> {
-                isPaid = false
-                isGreaterAmount = true
-            }
-        }
-
-        viewState.value = getCurrentViewState().copy(isPaid = isPaid, paidAmount = amount)
-        if (isGreaterAmount) {
-            errorViewState.value = ErrorViewState(R.string.err_greater_amount)
-        }
+    if (date.isNullOrEmpty()) {
+      errorViewState.value = ErrorViewState(R.string.err_date)
+      return
     }
 
-    fun addSale(
-        customerName: String?,
-        date: String?,
-        paidAmount: String?
-    ) {
-        val state = getCurrentViewState()
-        if (customerName.isNullOrEmpty()) {
-            errorViewState.value = ErrorViewState(R.string.err_name)
-            return
-        }
 
-        if (date.isNullOrEmpty()) {
-            errorViewState.value = ErrorViewState(R.string.err_date)
-            return
-        }
-
-
-        if (getCurrentViewState().items.isEmpty()) {
-            errorViewState.value = ErrorViewState(R.string.err_items)
-            return
-        }
-
-
-        if (paidAmount.isNullOrEmpty()) {
-            errorViewState.value = ErrorViewState(R.string.err_amount)
-            return
-        }
-
-        val balanceAmount =
-            (getCurrentViewState().subTotal - getCurrentViewState().paidAmount).round2Decimal()
-
-        sale = Sale(
-            customerName = customerName!!, date = date!!, isPaid = state.isPaid,
-            paidAmount = paidAmount!!.toDouble(),
-            balanceAmount = balanceAmount, totalAmount = getCurrentViewState().subTotal
-        )
-
-        addDisposable(
-            Single.fromCallable {
-                return@fromCallable saleDao.insert(sale)
-            }.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(BiConsumer { id, throwable ->
-                    if (throwable != null) {
-                        throwable.printStackTrace()
-                        return@BiConsumer
-                    }
-                    addItemsInDbForSale(id)
-                })
-        )
+    if (getCurrentViewState().items.isEmpty()) {
+      errorViewState.value = ErrorViewState(R.string.err_items)
+      return
     }
 
-    private fun addItemsInDbForSale(saleId: Long) {
-        val items = getCurrentViewState().items
 
-        val itemsTobeInserted = mutableListOf<Item>()
-        items.forEach {
-            itemsTobeInserted.add(it.copy(saleId = saleId))
-        }
-
-        addDisposable(
-            Single.fromCallable {
-                return@fromCallable itemDao.addItems(itemsTobeInserted)
-            }.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(BiConsumer { _, throwable ->
-                    if (throwable != null) {
-                        return@BiConsumer
-                    }
-                })
-        )
-        viewState.value = getCurrentViewState().copy(isDone = true)
-        errorViewState.value = ErrorViewState(-1)
-
+    if (paidAmount.isNullOrEmpty()) {
+      errorViewState.value = ErrorViewState(R.string.err_amount)
+      return
     }
+
+    val balanceAmount =
+      (getCurrentViewState().subTotal - getCurrentViewState().paidAmount).round2Decimal()
+
+    sale = Sale(
+        customerName = customerName!!, date = date!!, isPaid = state.isPaid,
+        paidAmount = paidAmount!!.toDouble(),
+        balanceAmount = balanceAmount, totalAmount = getCurrentViewState().subTotal
+    )
+
+    addDisposable(
+        Single.fromCallable {
+          return@fromCallable saleDao.insert(sale)
+        }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(BiConsumer { id, throwable ->
+              if (throwable != null) {
+                throwable.printStackTrace()
+                return@BiConsumer
+              }
+              addItemsInDbForSale(id)
+            })
+    )
+  }
+
+  private fun addItemsInDbForSale(saleId: Long) {
+    val items = getCurrentViewState().items
+
+    val itemsTobeInserted = mutableListOf<Item>()
+    items.forEach {
+      itemsTobeInserted.add(it.copy(saleId = saleId))
+    }
+
+    addDisposable(
+        Single.fromCallable {
+          return@fromCallable itemDao.addItems(itemsTobeInserted)
+        }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(BiConsumer { _, throwable ->
+              if (throwable != null) {
+                return@BiConsumer
+              }
+            })
+    )
+    viewState.value = getCurrentViewState().copy(isDone = true)
+    errorViewState.value = ErrorViewState(-1)
+
+  }
 }

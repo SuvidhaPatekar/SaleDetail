@@ -110,15 +110,15 @@ class SaleDetailFragment : Fragment(), Listener {
         if (balanceAmount >= amount.toDouble()) {
 
           val totalPaidAmount = (paidAmount + amount.toDouble()).round2Decimal()
-          var isPaid = 0
+          var paid = 0
 
           if (totalAmount == totalPaidAmount) {
-            isPaid = 1
+            paid = 1
           }
 
           viewModel.updatePayment(
               id, isPaid, (balanceAmount - amount.toDouble()).round2Decimal(), totalPaidAmount,
-              isPaid
+              paid
           )
         } else {
           showToast()
