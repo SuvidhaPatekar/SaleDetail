@@ -28,4 +28,6 @@
   <string name="total_amount">Total Amount</string>
   <string name="delete">DELETE</string>
   <string name="pay">PAY</string>
+    <string name="partially_paid">Partially Paid</string>
+  <string name="paid">Paid</string>
 </resources>

@@ -6,8 +6,6 @@ import itemsale.suvidha.com.itemsale.model.entity.Item
 
 @Dao
 interface ItemDao {
-
-  @Insert fun addItem(item: Item)
-
-  @Insert fun addItems(items: List<Item>)
+    @Insert
+    fun addItems(items: List<Item>)
 }

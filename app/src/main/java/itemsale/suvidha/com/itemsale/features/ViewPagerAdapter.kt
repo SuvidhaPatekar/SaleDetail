@@ -9,34 +9,32 @@ class ViewPagerAdapter(fragmentManager: FragmentManager) : FragmentStatePagerAda
     fragmentManager
 ) {
 
-  private val fragments = mutableListOf<Fragment>()
-  private val actualFragmentsInPager: Array<Fragment?> = arrayOfNulls(20)
+    private val fragments = mutableListOf<Fragment>()
+    private val titles = mutableListOf<String>()
+    private val actualFragmentsInPager: Array<Fragment?> = arrayOfNulls(20)
 
-  fun addFragment(
-    fragment: Fragment
-  ) {
-    fragments.add(fragment)
-  }
-
-  override fun getPageTitle(position: Int): CharSequence? {
-    if (position == 0) {
-      return "PARTIALLY PAID"
-    } else if (position == 1) {
-      return "PAID"
+    fun addFragment(
+        fragment: Fragment,
+        title: String
+    ) {
+        fragments.add(fragment)
+        titles.add(title)
     }
-    return "PAID"
-  }
 
-  override fun instantiateItem(
-    container: ViewGroup,
-    position: Int
-  ): Any {
-    val createdFragment = super.instantiateItem(container, position) as Fragment
-    actualFragmentsInPager[position] = createdFragment
-    return createdFragment
-  }
+    override fun getPageTitle(position: Int): CharSequence? {
+        return titles[position]
+    }
 
-  override fun getItem(position: Int) = fragments[position]
+    override fun instantiateItem(
+        container: ViewGroup,
+        position: Int
+    ): Any {
+        val createdFragment = super.instantiateItem(container, position) as Fragment
+        actualFragmentsInPager[position] = createdFragment
+        return createdFragment
+    }
 
-  override fun getCount() = fragments.size
+    override fun getItem(position: Int) = fragments[position]
+
+    override fun getCount() = fragments.size
 }
